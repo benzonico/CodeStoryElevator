@@ -7,20 +7,21 @@ import spark.Response;
 import spark.Route;
 
 public class ElevatorEngine {
-	
-	
-	
-	
+
+	private final static Elevator elevator = new Elevator();
+
 	public static void main(String[] args) {
-		initServices(8000);
+		ElevatorEngine.initServices(8000);
 	}
-	
-	public static void initServices(int port){
+
+	public static void initServices(int port) {
 		setPort(port);
 		get(new Route("call") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				System.out.println("call event at floor "+req.params("atFloor")+" to "+req.params("to"));
+				int floor = Integer.valueOf(req.queryParams("atFloor"));
+				Direction direction = Direction.valueOf(req.queryParams("to"));
+				elevator.call(floor, direction);
 				resp.status(200);
 				return resp;
 			}
@@ -28,7 +29,7 @@ public class ElevatorEngine {
 		get(new Route("go") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				System.out.println("go event ");
+				elevator.goTo(Integer.valueOf(req.queryParams("floorToGo")));
 				resp.status(200);
 				return resp;
 			}
@@ -36,7 +37,7 @@ public class ElevatorEngine {
 		get(new Route("userHasEntered") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				System.out.println("userEntered event");
+				elevator.userEntered();
 				resp.status(200);
 				return resp;
 			}
@@ -44,7 +45,7 @@ public class ElevatorEngine {
 		get(new Route("userHasExited") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				System.out.println("userExited event");
+				elevator.userExited();
 				resp.status(200);
 				return resp;
 			}
@@ -52,34 +53,19 @@ public class ElevatorEngine {
 		get(new Route("reset") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				System.out.println("reset event");
+				elevator.reset();
 				resp.status(200);
 				return resp;
 			}
 		});
 		get(new Route("nextCommand") {
-			
-			int i = 1;
-			String[] command = {"OPEN","CLOSE","UP",
-					"OPEN","CLOSE","UP",
-					"OPEN","CLOSE","UP",
-					"OPEN","CLOSE","UP",
-					"OPEN","CLOSE","UP",
-					"OPEN","CLOSE","DOWN",
-					"OPEN","CLOSE","DOWN",
-					"OPEN","CLOSE","DOWN",
-					"OPEN","CLOSE","DOWN",
-					"OPEN","CLOSE","DOWN",
-					}; 
+
 			@Override
 			public Object handle(Request req, Response resp) {
-				i++;
-				System.out.println("nextCommand event");
 				resp.status(200);
-				return command[i%command.length];
+				return elevator.nextCommand();
 			}
 		});
 	}
-	
 
 }

@@ -22,6 +22,14 @@ public class Elevator {
 	}
 
 	public Elevator(int startFloor) {
+		reset(startFloor);
+	}
+
+	public void reset() {
+		reset(0);
+	}
+
+	private void reset(int startFloor) {
 		currentFloor = startFloor;
 		calledAt = null;
 		open = false;
