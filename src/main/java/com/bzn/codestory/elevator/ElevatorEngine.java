@@ -16,7 +16,7 @@ public class ElevatorEngine {
 	}
 	
 	public static void initServices(int port){
-		setPort(8000);
+		setPort(port);
 		get(new Route("call") {
 			@Override
 			public Object handle(Request req, Response resp) {
