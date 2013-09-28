@@ -5,15 +5,19 @@ import static com.bzn.codestory.elevator.Command.DOWN;
 import static com.bzn.codestory.elevator.Command.NOTHING;
 import static com.bzn.codestory.elevator.Command.UP;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Elevator {
 
 	private int currentFloor;
 
-	private Integer calledAt;
+	// private Call calledAt;
+	// private Set<Call> calls;
 
 	private boolean open;
 
-	private Integer goingTo;
+	private Set<Integer> goingTo;
 
 	private int users;
 
@@ -31,9 +35,10 @@ public class Elevator {
 
 	private void reset(int startFloor) {
 		currentFloor = startFloor;
-		calledAt = null;
+		// calledAt = null;
+		// calls = new HashSet<>();
 		open = false;
-		goingTo = null;
+		goingTo = new HashSet<>();
 		users = 0;
 	}
 
@@ -42,28 +47,21 @@ public class Elevator {
 			open = false;
 			return CLOSE;
 		}
-
-		if (goingTo != null) {
-			if (currentFloor == goingTo) {
-				goingTo = null;
-				return open();
-			} else if (currentFloor < goingTo) {
+		// if (calledAt != null && calledAt.getFloor() == currentFloor) {
+		// calls.remove(calledAt);
+		// calledAt = calls.isEmpty() ? null : calls.iterator().next();
+		// }
+		if (goingTo.contains(currentFloor)) {
+			goingTo.remove(currentFloor);
+			return open();
+		} else if (!goingTo.isEmpty()) {
+			if (currentFloor < goingTo.iterator().next()) {
 				return up();
 			} else {
 				return down();
 			}
 		}
-
-		if (calledAt == null) {
-			return NOTHING;
-		} else if (calledAt == currentFloor) {
-			calledAt = null;
-			return open();
-		} else if (calledAt > currentFloor) {
-			return up();
-		} else {
-			return down();
-		}
+		return NOTHING;
 	}
 
 	private Command down() {
@@ -82,13 +80,16 @@ public class Elevator {
 	}
 
 	public void call(int floor, Direction direction) {
-		calledAt = floor;
+		goTo(floor);
+		// Call call = new Call(floor, direction);
+		// if (calls.isEmpty()) {
+		// calledAt = call;
+		// }
+		// calls.add(call);
 	}
 
 	public void goTo(int floor) {
-		if (floor != currentFloor) {
-			goingTo = floor;
-		}
+		goingTo.add(floor);
 	}
 
 	public void userEntered() {

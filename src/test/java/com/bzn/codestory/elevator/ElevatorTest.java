@@ -90,6 +90,42 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, NOTHING);
 	}
 
+	@Test
+	public void twoUsers_calling_at_0_and_going_to_1_and_2() throws Exception {
+		elevator.call(0, Direction.UP);
+		elevator.call(0, Direction.UP);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		elevator.userEntered();
+		assertThat(elevator.usersInCabin()).isEqualTo(2);
+		elevator.goTo(1);
+		elevator.goTo(2);
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		assertThat(elevator.usersInCabin()).isEqualTo(1);
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		assertThat(elevator.usersInCabin()).isEqualTo(0);
+		checkNextCommands(CLOSE, NOTHING);
+	}
+
+	@Test
+	public void twoUsers_calling_at_0_and_1_and_going_to_2_and_3() throws Exception {
+		elevator.call(0, Direction.UP);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		elevator.goTo(2);
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userEntered();
+		elevator.goTo(3);
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		checkNextCommands(CLOSE, NOTHING);
+	}
+
 	private void checkNextCommands(Command... commands) {
 		for (Command expected : commands) {
 			assertThat(elevator.nextCommand()).isEqualTo(expected);
