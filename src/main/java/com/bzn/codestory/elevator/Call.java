@@ -40,4 +40,16 @@ public class Call {
 		return floor;
 	}
 
+	public boolean isAt(int currentFloor) {
+		return floor == currentFloor;
+	}
+
+	public boolean isHigherThan(int currentFloor) {
+		return floor > currentFloor;
+	}
+
+	public boolean isLowerThan(int currentFloor) {
+		return floor < currentFloor;
+	}
+
 }

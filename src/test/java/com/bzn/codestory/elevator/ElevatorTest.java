@@ -110,7 +110,8 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void twoUsers_calling_at_0_and_1_and_going_to_2_and_3() throws Exception {
+	public void twoUsers_calling_at_0_and_1_and_going_to_2_and_3()
+			throws Exception {
 		elevator.call(0, Direction.UP);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(OPEN);
@@ -122,6 +123,24 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
 		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		checkNextCommands(CLOSE, NOTHING);
+	}
+
+	@Test
+	public void oneUser_calling_at_0_and_one_user_calling_down_at_two()
+			throws Exception {
+		elevator.call(0, Direction.UP);
+		elevator.call(2, Direction.DOWN);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		elevator.goTo(3);
+		checkNextCommands(CLOSE, UP, UP, UP, OPEN);
+		elevator.userExited();
+		checkNextCommands(CLOSE, DOWN, OPEN);
+		elevator.userEntered();
+		elevator.goTo(0);
+		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
 		elevator.userExited();
 		checkNextCommands(CLOSE, NOTHING);
 	}

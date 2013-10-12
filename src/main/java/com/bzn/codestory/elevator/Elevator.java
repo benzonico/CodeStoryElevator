@@ -6,20 +6,16 @@ import static com.bzn.codestory.elevator.Command.NOTHING;
 import static com.bzn.codestory.elevator.Command.UP;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class Elevator {
 
 	private int currentFloor;
-
-	// private Call calledAt;
-	// private Set<Call> calls;
-
+	private Set<Call> calls;
 	private boolean open;
-
-	private Set<Integer> goingTo;
-
 	private int users;
+	private Direction currentDirection;
 
 	public Elevator() {
 		this(0);
@@ -35,11 +31,10 @@ public class Elevator {
 
 	private void reset(int startFloor) {
 		currentFloor = startFloor;
-		// calledAt = null;
-		// calls = new HashSet<>();
+		calls = new HashSet<>();
 		open = false;
-		goingTo = new HashSet<>();
 		users = 0;
+		currentDirection = Direction.NIL;
 	}
 
 	public Command nextCommand() {
@@ -47,30 +42,85 @@ public class Elevator {
 			open = false;
 			return CLOSE;
 		}
-		// if (calledAt != null && calledAt.getFloor() == currentFloor) {
-		// calls.remove(calledAt);
-		// calledAt = calls.isEmpty() ? null : calls.iterator().next();
-		// }
-		if (goingTo.contains(currentFloor)) {
-			goingTo.remove(currentFloor);
+		if (shouldOpen()) {
+			removeAllCallOfCurrentFloor();
 			return open();
-		} else if (!goingTo.isEmpty()) {
-			if (currentFloor < goingTo.iterator().next()) {
+		} else if (!calls.isEmpty()) {
+			if (shouldGoUp()) {
 				return up();
 			} else {
 				return down();
 			}
 		}
+		currentDirection = Direction.NIL;
 		return NOTHING;
+	}
+
+	private void removeAllCallOfCurrentFloor() {
+		Iterator<Call> callIterator = calls.iterator();
+		while (callIterator.hasNext()) {
+			Call call = callIterator.next();
+			if (call.isAt(currentFloor)) {
+				callIterator.remove();
+			}
+		}
+
+	}
+
+	private boolean shouldGoUp() {
+		if (currentDirection.isUp()) {
+			for (Call call : calls) {
+				if (call.isHigherThan(currentFloor)) {
+					return true;
+				}
+			}
+		}
+		if (currentDirection.isNil()) {
+			int countCallsUp = 0;
+			for (Call call : calls) {
+				if (call.isLowerThan(currentFloor)) {
+					countCallsUp--;
+				} else {
+					countCallsUp++;
+				}
+			}
+			return countCallsUp >= 0;
+		}
+		return false;
+	}
+
+	private boolean shouldOpen() {
+		boolean hasFollowingCall = false;
+		if (currentDirection.isUp()) {
+			for (Call call : calls) {
+				hasFollowingCall = hasFollowingCall
+						|| call.isHigherThan(currentFloor);
+			}
+		}
+		if (currentDirection.isDown()) {
+			for (Call call : calls) {
+				hasFollowingCall = hasFollowingCall
+						|| call.isLowerThan(currentFloor);
+			}
+		}
+		if (!hasFollowingCall) {
+			currentDirection = Direction.NIL;
+		}
+		return calls.contains(new Call(currentFloor, currentDirection))
+				|| (currentDirection.isNil() && (calls.contains(new Call(
+						currentFloor, Direction.UP)) || calls
+						.contains(new Call(currentFloor, Direction.DOWN))));
 	}
 
 	private Command down() {
 		currentFloor--;
+		currentDirection = Direction.DOWN;
 		return DOWN;
 	}
 
 	private Command up() {
 		currentFloor++;
+		currentDirection = Direction.UP;
 		return UP;
 	}
 
@@ -80,16 +130,16 @@ public class Elevator {
 	}
 
 	public void call(int floor, Direction direction) {
-		goTo(floor);
-		// Call call = new Call(floor, direction);
-		// if (calls.isEmpty()) {
-		// calledAt = call;
-		// }
-		// calls.add(call);
+		Call call = new Call(floor, direction);
+		calls.add(call);
 	}
 
 	public void goTo(int floor) {
-		goingTo.add(floor);
+		Direction dir = Direction.UP;
+		if (floor < currentFloor) {
+			dir = Direction.DOWN;
+		}
+		call(floor, dir);
 	}
 
 	public void userEntered() {
