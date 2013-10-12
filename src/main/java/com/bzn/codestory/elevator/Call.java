@@ -36,14 +36,6 @@ public class Call {
 		return true;
 	}
 
-	public int getFloor() {
-		return floor;
-	}
-
-	public boolean isAt(int currentFloor) {
-		return floor == currentFloor;
-	}
-
 	public boolean isHigherThan(int currentFloor) {
 		return floor > currentFloor;
 	}
