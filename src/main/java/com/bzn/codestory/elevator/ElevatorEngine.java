@@ -11,8 +11,8 @@ public class ElevatorEngine {
 	private final static Elevator elevator = new Elevator();
 
 	public static void main(String[] args) {
-		ElevatorEngine
-				.initServices(Integer.parseInt(System.getenv("app.port")));
+		ElevatorEngine.initServices(Integer.parseInt(System
+				.getProperty("app.port")));
 	}
 
 	public static void initServices(int port) {
