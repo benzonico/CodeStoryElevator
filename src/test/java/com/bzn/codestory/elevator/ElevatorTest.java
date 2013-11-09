@@ -13,6 +13,7 @@ import org.junit.Test;
 public class ElevatorTest {
 
 	private Elevator elevator;
+	private static final int MIDDLE_FLOOR = 10;
 
 	@Before
 	public void setUp() {
@@ -21,9 +22,10 @@ public class ElevatorTest {
 
 	@Test
 	public void should_stay_idle_when_no_stimulus() throws Exception {
+		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
 		checkNextCommands(NOTHING);
 	}
-
+	
 	@Test
 	public void should_open_doors_if_call_at_initial_floor() throws Exception {
 		elevator.call(0, Direction.UP);
@@ -37,6 +39,22 @@ public class ElevatorTest {
 	}
 
 	@Test
+	public void should_go_to_middle_floor_when_no_calls() throws Exception {
+		elevator.call(0,  Direction.UP);
+		checkNextCommands(OPEN, CLOSE);
+		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
+		checkNextCommands(NOTHING);
+	}
+	
+	@Test
+	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls() throws Exception{
+		elevator.call(12, Direction.DOWN);
+		checkNextCommandSomeTimes(UP, 12);
+		checkNextCommands(OPEN, CLOSE);
+		checkNextCommands(DOWN, DOWN, NOTHING);
+	}
+	
+	@Test
 	public void oneUser_calling_at_0_and_going_to_1() throws Exception {
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
@@ -46,7 +64,8 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(0);
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
+		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR - 1);
 	}
 
 	@Test
@@ -59,7 +78,7 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, UP, UP, OPEN);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(0);
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
@@ -72,7 +91,7 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, DOWN, OPEN);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(0);
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
@@ -87,7 +106,7 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, UP, UP, UP, OPEN);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(0);
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
@@ -106,7 +125,7 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(0);
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
@@ -124,7 +143,7 @@ public class ElevatorTest {
 		elevator.userExited();
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
@@ -142,7 +161,7 @@ public class ElevatorTest {
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
 		elevator.userExited();
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
@@ -160,9 +179,15 @@ public class ElevatorTest {
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
 		elevator.userExited();
-		checkNextCommands(CLOSE, NOTHING);
+		checkNextCommands(CLOSE);
 	}
 
+	private void checkNextCommandSomeTimes(Command command, int times) {
+		for (int i = 0; i < times; i++) {
+			checkNextCommands(command);
+		}
+	}
+	
 	private void checkNextCommands(Command... commands) {
 		for (Command expected : commands) {
 			assertThat(elevator.nextCommand()).isEqualTo(expected);
