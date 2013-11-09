@@ -11,6 +11,7 @@ import java.util.Set;
 public class Elevator {
 
 	private static final int DEFAULT_FLOORS = 100;
+	private static final int MIDDLE_FLOOR = 10;
 
 	private int currentFloor;
 	private Set<Call> calls;
@@ -54,7 +55,7 @@ public class Elevator {
 				return down();
 			}
 		}
-		return doNothing();
+		return idle();
 	}
 
 	private boolean hasCall() {
@@ -130,6 +131,16 @@ public class Elevator {
 		return Command.OPEN;
 	}
 
+	private Command idle() {
+		Command idleCommand = doNothing();
+		if(currentFloor > MIDDLE_FLOOR){
+			idleCommand = down();
+		}else if(currentFloor < MIDDLE_FLOOR){
+			idleCommand = up();
+		}
+		return idleCommand;
+	}
+	
 	private Command doNothing() {
 		currentDirection = Direction.NIL;
 		return NOTHING;
