@@ -163,6 +163,27 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, NOTHING);
 	}
 
+	@Test
+	public void should_increment_frequencies() throws Exception {
+		// Not a magic number
+		final int numberOfCalls = 42;
+		final int floor = 3;
+		final Direction direction = Direction.DOWN;
+
+		assertThat(elevator.getFrequencies()[floor]).isZero();
+
+		for (int callCounter = 0; callCounter < numberOfCalls; callCounter++) {
+			elevator.call(floor, direction);
+		}
+		assertThat(elevator.getFrequencies()[floor]).isEqualTo(numberOfCalls);
+
+		final int newFloors = 7;
+		elevator.reset(newFloors);
+
+		assertThat(elevator.getFrequencies()[floor]).isZero();
+
+	}
+
 	private void checkNextCommands(Command... commands) {
 		for (Command expected : commands) {
 			assertThat(elevator.nextCommand()).isEqualTo(expected);
