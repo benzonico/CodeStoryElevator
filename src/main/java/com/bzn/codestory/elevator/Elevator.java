@@ -10,26 +10,31 @@ import java.util.Set;
 
 public class Elevator {
 
+	private static final int DEFAULT_FLOORS = 100;
+
 	private int currentFloor;
 	private Set<Call> calls;
 	private boolean open;
 	private int users;
 	private Direction currentDirection;
+	private int[] frequencies;
 
 	public Elevator() {
 		this(0);
 	}
 
 	public Elevator(int startFloor) {
-		reset(startFloor);
-	}
-
-	public void reset() {
-		reset(0);
-	}
-
-	private void reset(int startFloor) {
+		reset(DEFAULT_FLOORS);
 		currentFloor = startFloor;
+	}
+
+	public void reset(int floors) {
+		frequencies = new int[floors];
+		reset();
+	}
+
+	private void reset() {
+		currentFloor = 0;
 		calls = new HashSet<>();
 		open = false;
 		users = 0;
@@ -137,6 +142,7 @@ public class Elevator {
 
 	public void call(int floor, Direction direction) {
 		calls.add(new Call(floor, direction));
+		incrementFrequency(floor);
 	}
 
 	public void goTo(int floor) {
@@ -159,8 +165,19 @@ public class Elevator {
 		users--;
 	}
 
+	public int[] getFrequencies() {
+		if (frequencies == null) {
+			frequencies = new int[DEFAULT_FLOORS];
+		}
+		return frequencies;
+	}
+
 	private boolean hasCallToCurrentFloor(Direction dir) {
 		return calls.contains(new Call(currentFloor, dir));
+	}
+
+	private void incrementFrequency(int floor) {
+		frequencies[floor] = frequencies[floor] + 1;
 	}
 
 }
