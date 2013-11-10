@@ -197,7 +197,7 @@ public class ElevatorTest {
 		assertThat(elevator.getFrequencies()[floor]).isEqualTo(numberOfCalls);
 
 		final int newFloors = 7;
-		elevator.reset(newFloors);
+		elevator.reset(0, newFloors - 1);
 
 		assertThat(elevator.getFrequencies()[floor]).isZero();
 

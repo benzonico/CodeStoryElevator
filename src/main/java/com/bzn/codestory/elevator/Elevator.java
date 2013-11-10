@@ -8,10 +8,11 @@ import static com.bzn.codestory.elevator.Command.UP;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class Elevator {
 
-	private static final int DEFAULT_FLOORS = 100;
-	private static final int MIDDLE_FLOOR = 10;
+	private static final int DEFAULT_FLOORS = 20;
 
 	private int currentFloor;
 	private Set<Call> calls;
@@ -24,13 +25,15 @@ public class Elevator {
 		this(0);
 	}
 
-	public Elevator(int startFloor) {
-		reset(DEFAULT_FLOORS);
+	@VisibleForTesting
+	Elevator(int startFloor) {
+		reset(0, DEFAULT_FLOORS - 1);
 		currentFloor = startFloor;
 	}
 
-	public void reset(int floors) {
-		frequencies = new int[floors];
+	public void reset(int lower, int higher) {
+		frequencies = new int[higher - lower + 1];
+		currentFloor = 0;
 		reset();
 	}
 
@@ -133,12 +136,16 @@ public class Elevator {
 
 	private Command idle() {
 		Command idleCommand = doNothing();
-		if(currentFloor > MIDDLE_FLOOR){
+		if(currentFloor > getMiddleFloor()){
 			idleCommand = down();
-		}else if(currentFloor < MIDDLE_FLOOR){
+		}else if(currentFloor < getMiddleFloor()){
 			idleCommand = up();
 		}
 		return idleCommand;
+	}
+
+	private int getMiddleFloor() {
+		return frequencies.length / 2;
 	}
 	
 	private Command doNothing() {

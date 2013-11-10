@@ -60,7 +60,7 @@ public class ElevatorEngine {
 				System.out.println("RESET : cause : "
 						+ req.queryParams("cause"));
 
-				elevator.reset(higher - lower + 1);
+				elevator.reset(lower, higher);
 				resp.status(200);
 				return resp;
 			}
