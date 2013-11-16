@@ -20,12 +20,11 @@ public class Elevator {
 
 	private int currentFloor;
 	private int cabinSize;
-	private Set<Call> calls;
+	private Set<Order> orders;
 	private boolean open;
 	private int users;
 	private Direction currentDirection;
 	private SortedMap<Integer, Integer> frequencies;
-
 
 	public Elevator() {
 		this(0);
@@ -53,7 +52,7 @@ public class Elevator {
 
 	private void reset() {
 		currentFloor = 0;
-		calls = new HashSet<>();
+		orders = new HashSet<>();
 		open = false;
 		users = 0;
 		currentDirection = Direction.NIL;
@@ -65,7 +64,7 @@ public class Elevator {
 		}
 		if (shouldOpen()) {
 			return open();
-		} else if (hasCall()) {
+		} else if (hasOrder()) {
 			if (shouldGoUp()) {
 				return up();
 			} else {
@@ -75,13 +74,13 @@ public class Elevator {
 		return idle();
 	}
 
-	private boolean hasCall() {
-		return !calls.isEmpty();
+	private boolean hasOrder() {
+		return !orders.isEmpty();
 	}
 
 	private boolean shouldGoUp() {
 		if (currentDirection.isNil()) {
-			return countCallsBelow() <= countCallsAbove();
+			return countOrdersBelow() <= countOrdersAbove();
 		}
 		return currentDirection.isUp();
 	}
@@ -90,24 +89,24 @@ public class Elevator {
 		if (shouldChangeDirection()) {
 			currentDirection = Direction.NIL;
 		}
-		return hasCallToCurrentFloor(currentDirection)
-				|| (currentDirection.isNil() && (hasCallToCurrentFloor(Direction.UP) || hasCallToCurrentFloor(Direction.DOWN)));
+		return hasOrderToCurrentFloor(currentDirection)
+				|| (currentDirection.isNil() && (hasOrderToCurrentFloor(Direction.UP) || hasOrderToCurrentFloor(Direction.DOWN)));
 	}
 
 	private boolean shouldChangeDirection() {
 		boolean shouldChange = true;
 		if (currentDirection.isUp()) {
-			shouldChange = countCallsAbove() == 0;
+			shouldChange = countOrdersAbove() == 0;
 		}
 		if (currentDirection.isDown()) {
-			shouldChange = countCallsBelow() == 0;
+			shouldChange = countOrdersBelow() == 0;
 		}
 		return shouldChange;
 	}
 
-	private int countCallsAbove() {
+	private int countOrdersAbove() {
 		int countCallsUp = 0;
-		for (Call call : calls) {
+		for (Order call : orders) {
 			if (call.isHigherThan(currentFloor)) {
 				countCallsUp++;
 			}
@@ -115,9 +114,9 @@ public class Elevator {
 		return countCallsUp;
 	}
 
-	private int countCallsBelow() {
+	private int countOrdersBelow() {
 		int countCallsDown = 0;
-		for (Call call : calls) {
+		for (Order call : orders) {
 			if (call.isLowerThan(currentFloor)) {
 				countCallsDown++;
 			}
@@ -168,12 +167,14 @@ public class Elevator {
 	}
 
 	private void removeAllCallOfCurrentFloor() {
-		calls.remove(new Call(currentFloor, Direction.UP));
-		calls.remove(new Call(currentFloor, Direction.DOWN));
+		orders.remove(new Call(currentFloor, Direction.UP));
+		orders.remove(new Call(currentFloor, Direction.DOWN));
+		orders.remove(new GoTo(currentFloor, Direction.UP));
+		orders.remove(new GoTo(currentFloor, Direction.DOWN));
 	}
 
 	public void call(int floor, Direction direction) {
-		calls.add(new Call(floor, direction));
+		orders.add(new Call(floor, direction));
 		incrementFrequency(floor);
 	}
 
@@ -182,7 +183,7 @@ public class Elevator {
 		if (floor < currentFloor) {
 			dir = Direction.DOWN;
 		}
-		call(floor, dir);
+		orders.add(new GoTo(floor, dir));
 	}
 
 	public void userEntered() {
@@ -204,8 +205,8 @@ public class Elevator {
 		return frequencies.values().toArray(new Integer[0]);
 	}
 
-	private boolean hasCallToCurrentFloor(Direction dir) {
-		return calls.contains(new Call(currentFloor, dir));
+	private boolean hasOrderToCurrentFloor(Direction dir) {
+		return orders.contains(new Call(currentFloor, dir)) || orders.contains(new GoTo(currentFloor, dir));
 	}
 
 	private void incrementFrequency(int floor) {

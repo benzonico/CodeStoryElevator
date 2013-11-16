@@ -1,14 +1,14 @@
 package com.bzn.codestory.elevator;
 
-public class Call extends Order {
+public class GoTo extends Order {
 
-	public Call(int floor, Direction direction) {
+	public GoTo(int floor, Direction direction) {
 		super(floor, direction);
 	}
 
 	@Override
 	public boolean isOutput() {
-		return false;
+		return true;
 	}
 
 }
