@@ -16,12 +16,16 @@ public class Elevator {
 
 	private static final int DEFAULT_FLOORS = 20;
 
+	private static final int DEFAULT_CABIN_SIZE = 30;
+
 	private int currentFloor;
+	private int cabinSize;
 	private Set<Call> calls;
 	private boolean open;
 	private int users;
 	private Direction currentDirection;
 	private SortedMap<Integer, Integer> frequencies;
+
 
 	public Elevator() {
 		this(0);
@@ -29,13 +33,14 @@ public class Elevator {
 
 	@VisibleForTesting
 	Elevator(int startFloor) {
-		reset(0, DEFAULT_FLOORS - 1);
+		reset(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_SIZE);
 		currentFloor = startFloor;
 	}
 
-	public void reset(int lower, int higher) {
+	public void reset(int lower, int higher, int cabinSize) {
 		resetFrequencies(lower, higher);
 		currentFloor = 0;
+		this.cabinSize = cabinSize;
 		reset();
 	}
 

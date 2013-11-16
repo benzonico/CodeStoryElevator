@@ -56,11 +56,12 @@ public class ElevatorEngine {
 			public Object handle(Request req, Response resp) {
 				int lower = Integer.valueOf(req.queryParams("lowerFloor"));
 				int higher = Integer.valueOf(req.queryParams("higherFloor"));
-
+				int cabinSize = Integer.valueOf(req.queryParams("cabinSize"));
+				
 				System.out.println("RESET : cause : "
 						+ req.queryParams("cause"));
 
-				elevator.reset(lower, higher);
+				elevator.reset(lower, higher, cabinSize);
 				resp.status(200);
 				return resp;
 			}
