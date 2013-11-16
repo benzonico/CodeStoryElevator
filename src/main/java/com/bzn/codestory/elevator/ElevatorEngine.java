@@ -6,6 +6,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ElevatorEngine {
 
 	private final static Elevator elevator = new Elevator();
@@ -67,27 +70,24 @@ public class ElevatorEngine {
 			}
 		});
 		get(new Route("nextCommand") {
-
 			@Override
 			public Object handle(Request req, Response resp) {
 				resp.status(200);
 				return elevator.nextCommand();
 			}
 		});
-
-		get(new Route("frequencies") {
-
+		get(new Route("status") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				String result = "<table>";
-				for (int i = elevator.getFrequencies().length - 1; i >= 0; i--) {
-					result += "<tr><td>" + i + "</td><td>" + elevator.getFrequencies()[i]
-							+ "</td></tr>";
+				resp.type("application/json");
+				try {
+					ObjectMapper mapper = new ObjectMapper();
+					return mapper.writeValueAsString(elevator.getStatus());
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+					return "";
 				}
-				result += "</table>";
-				return result;
 			}
-
 		});
 	}
 

@@ -213,4 +213,8 @@ public class Elevator {
 		frequencies.put(floor, frequencies.get(floor) + 1);
 	}
 
+	public ElevatorStatus getStatus() {
+		return new ElevatorStatus(currentFloor, users, cabinSize, open, currentDirection, frequencies);
+	}
+
 }

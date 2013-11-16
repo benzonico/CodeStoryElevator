@@ -8,11 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -71,17 +73,16 @@ public class ElevatorEngineTest {
 			assertThat(code).isEqualTo(HttpStatus.SC_OK);
 		}
 
-		HttpGet get = new HttpGet("http://localhost:" + PORT + "/frequencies");
+		HttpGet get = new HttpGet("http://localhost:" + PORT + "/status");
 		HttpResponse response = httpclient.execute(get);
 		// required to release the connection
-		String freqHTML = getResponseAsString(get, response.getEntity());
+		String statusJson = getResponseAsString(get, response.getEntity());
 		int code = response.getStatusLine().getStatusCode();
 		assertThat(code).isEqualTo(HttpStatus.SC_OK);
-		assertThat(freqHTML).isEqualTo(
-				"<table>" + "<tr><td>2</td><td>0</td></tr>"
-						+ "<tr><td>1</td><td>2</td></tr>"
-						+ "<tr><td>0</td><td>0</td></tr></table>");
-
+		assertThat(response.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue())
+				.isEqualTo(ContentType.APPLICATION_JSON.getMimeType());
+		assertThat(statusJson).startsWith("{")
+				.contains("\"frequencies\":{\"0\":0,\"1\":2,")
+				.endsWith("}");
 	}
-
 }

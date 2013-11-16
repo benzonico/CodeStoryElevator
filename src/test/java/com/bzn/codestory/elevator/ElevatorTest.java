@@ -204,6 +204,13 @@ public class ElevatorTest {
 
 	}
 
+	@Test
+	public void should_go_6ft_under() throws Exception {
+		elevator.reset(-6, 6, 6);
+		elevator.call(-6, Direction.UP);
+		checkNextCommands(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN, OPEN);
+	}
+
 	private void checkNextCommandSomeTimes(Command command, int times) {
 		for (int i = 0; i < times; i++) {
 			checkNextCommands(command);
