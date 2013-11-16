@@ -1,5 +1,8 @@
 package com.bzn.codestory.elevator;
 
+import static com.bzn.codestory.elevator.Direction.DOWN;
+import static com.bzn.codestory.elevator.Direction.UP;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,10 +39,10 @@ public class Orders {
 
 	public void remove(int currentFloor) {
 		// TODO change this big crap
-		orders.remove(new Call(currentFloor, Direction.UP));
-		orders.remove(new Call(currentFloor, Direction.DOWN));
-		orders.remove(new GoTo(currentFloor, Direction.UP));
-		orders.remove(new GoTo(currentFloor, Direction.DOWN));
+		orders.remove(new Call(currentFloor, UP));
+		orders.remove(new Call(currentFloor, DOWN));
+		orders.remove(new GoTo(currentFloor, UP));
+		orders.remove(new GoTo(currentFloor, DOWN));
 	}
 
 	public void add(Order order) {
@@ -48,5 +51,14 @@ public class Orders {
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
 		return orders.contains(new Call(currentFloor, dir)) || orders.contains(new GoTo(currentFloor, dir));
+	}
+
+	public boolean hasOrderTo(int currentFloor) {
+		return hasOrderTo(currentFloor, UP)
+				|| hasOrderTo(currentFloor, DOWN);
+	}
+	
+	public boolean hasGoTo(int currentFloor) {
+		return orders.contains(new GoTo(currentFloor, UP)) || orders.contains(new GoTo(currentFloor, DOWN));
 	}
 }

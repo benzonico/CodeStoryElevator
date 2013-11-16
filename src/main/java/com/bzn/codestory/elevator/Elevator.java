@@ -20,7 +20,7 @@ public class Elevator {
 	private int cabinSize;
 	private Orders orders;
 	private boolean open;
-	private int users;
+	private int usersInCabin;
 	private Direction currentDirection;
 	private SortedMap<Integer, Integer> frequencies;
 
@@ -52,7 +52,7 @@ public class Elevator {
 		currentFloor = 0;
 		orders = new Orders();
 		open = false;
-		users = 0;
+		usersInCabin = 0;
 		currentDirection = Direction.NIL;
 	}
 
@@ -83,8 +83,12 @@ public class Elevator {
 		if (shouldChangeDirection()) {
 			currentDirection = Direction.NIL;
 		}
-		return orders.hasOrderTo(currentFloor, currentDirection)
-				|| (currentDirection.isNil() && (orders.hasOrderTo(currentFloor, Direction.UP) || orders.hasOrderTo(currentFloor, Direction.DOWN)));
+		if (isCabinFull()) {
+			return orders.hasGoTo(currentFloor);
+		} else {
+			return orders.hasOrderTo(currentFloor, currentDirection)
+					|| (currentDirection.isNil() && orders.hasOrderTo(currentFloor));
+		}
 	}
 
 	private boolean shouldChangeDirection() {
@@ -96,6 +100,10 @@ public class Elevator {
 			shouldChange = orders.countOrdersBelow(currentFloor) == 0;
 		}
 		return shouldChange;
+	}
+
+	private boolean isCabinFull() {
+		return usersInCabin == cabinSize;
 	}
 
 	private Command down() {
@@ -158,15 +166,15 @@ public class Elevator {
 	}
 
 	public void userEntered() {
-		users++;
+		usersInCabin++;
 	}
 
 	public int usersInCabin() {
-		return users;
+		return usersInCabin;
 	}
 
 	public void userExited() {
-		users--;
+		usersInCabin--;
 	}
 
 	public Integer[] getFrequencies() {
@@ -181,7 +189,7 @@ public class Elevator {
 	}
 
 	public ElevatorStatus getStatus() {
-		return new ElevatorStatus(currentFloor, users, cabinSize, open, currentDirection, frequencies);
+		return new ElevatorStatus(currentFloor, usersInCabin, cabinSize, open, currentDirection, frequencies);
 	}
 
 }

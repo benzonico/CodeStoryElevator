@@ -211,6 +211,39 @@ public class ElevatorTest {
 		checkNextCommands(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN, OPEN);
 	}
 
+	@Test
+	public void should_open_for_safety_reasons() throws Exception {
+		elevator.reset(0, 3, 2);
+		elevator.call(1, Direction.UP);
+		elevator.call(1, Direction.UP);
+		elevator.call(2, Direction.UP);
+		checkNextCommands(UP, OPEN);
+		elevator.userEntered();
+		elevator.userEntered();
+		elevator.goTo(2);
+		elevator.goTo(3);
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		elevator.userEntered();
+		checkNextCommands(CLOSE, UP, OPEN);
+	}
+
+	@Test
+	public void should_refuse_if_cabin_full() throws Exception {
+		elevator.reset(0, 3, 2);
+		elevator.call(1, Direction.UP);
+		elevator.call(1, Direction.UP);
+		elevator.call(2, Direction.UP);
+		checkNextCommands(UP, OPEN);
+		elevator.userEntered();
+		elevator.userEntered();
+		elevator.goTo(3);
+		elevator.goTo(3);
+		checkNextCommands(CLOSE, UP, UP, OPEN);
+		elevator.userExited();
+		elevator.userExited();
+		checkNextCommands(CLOSE, DOWN, OPEN);
+	}
 	private void checkNextCommandSomeTimes(Command command, int times) {
 		for (int i = 0; i < times; i++) {
 			checkNextCommands(command);
