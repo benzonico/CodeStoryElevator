@@ -7,8 +7,10 @@ import static com.bzn.codestory.elevator.Command.UP;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedMap;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Maps;
 
 public class Elevator {
 
@@ -19,7 +21,7 @@ public class Elevator {
 	private boolean open;
 	private int users;
 	private Direction currentDirection;
-	private int[] frequencies;
+	private SortedMap<Integer, Integer> frequencies;
 
 	public Elevator() {
 		this(0);
@@ -32,9 +34,16 @@ public class Elevator {
 	}
 
 	public void reset(int lower, int higher) {
-		frequencies = new int[higher - lower + 1];
+		resetFrequencies(lower, higher);
 		currentFloor = 0;
 		reset();
+	}
+
+	private void resetFrequencies(int lower, int higher) {
+		frequencies = Maps.newTreeMap();
+		for(int floor = lower; floor < higher + 1; floor++){
+			frequencies.put(floor, 0);
+		}
 	}
 
 	private void reset() {
@@ -145,7 +154,7 @@ public class Elevator {
 	}
 
 	private int getMiddleFloor() {
-		return frequencies.length / 2;
+		return frequencies.size() / 2;
 	}
 	
 	private Command doNothing() {
@@ -183,11 +192,11 @@ public class Elevator {
 		users--;
 	}
 
-	public int[] getFrequencies() {
+	public Integer[] getFrequencies() {
 		if (frequencies == null) {
-			frequencies = new int[DEFAULT_FLOORS];
+			resetFrequencies(0, DEFAULT_FLOORS);
 		}
-		return frequencies;
+		return frequencies.values().toArray(new Integer[0]);
 	}
 
 	private boolean hasCallToCurrentFloor(Direction dir) {
@@ -195,7 +204,7 @@ public class Elevator {
 	}
 
 	private void incrementFrequency(int floor) {
-		frequencies[floor] = frequencies[floor] + 1;
+		frequencies.put(floor, frequencies.get(floor) + 1);
 	}
 
 }
