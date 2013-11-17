@@ -212,7 +212,7 @@ public class ElevatorTest {
 		checkNextCommands(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN, OPEN);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void should_open_for_safety_reasons() throws Exception {
 		elevator.reset(0, 3, 2);
 		elevator.call(1, Direction.UP);
@@ -229,7 +229,7 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, UP, OPEN);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void should_refuse_if_cabin_full() throws Exception {
 		elevator.reset(0, 3, 2);
 		elevator.call(1, Direction.UP);
