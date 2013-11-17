@@ -75,8 +75,7 @@ public class Elevator {
 	private boolean shouldGoUp() {
 		if (currentDirection.isNil()) {
 			if (isCabinFull()) {
-				return orders.countGoToBelow(currentFloor) <= orders
-						.countGoToAbove(currentFloor);
+				throw new RuntimeException("ZAP THE SON OF A B*TCH AGAIN");
 			} else {
 				return orders.countOrdersBelow(currentFloor) <= orders
 						.countOrdersAbove(currentFloor);

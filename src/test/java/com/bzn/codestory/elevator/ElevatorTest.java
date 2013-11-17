@@ -246,7 +246,7 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, DOWN, OPEN);
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void should_change_direction_when_cabin_full_and_no_GoTo_above()
 			throws Exception {
 		elevator.reset(0, 3, 2);
