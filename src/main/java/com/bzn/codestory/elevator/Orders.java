@@ -50,15 +50,36 @@ public class Orders {
 	}
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
-		return orders.contains(new Call(currentFloor, dir)) || orders.contains(new GoTo(currentFloor, dir));
+		return orders.contains(new Call(currentFloor, dir))
+				|| orders.contains(new GoTo(currentFloor, dir));
 	}
 
 	public boolean hasOrderTo(int currentFloor) {
-		return hasOrderTo(currentFloor, UP)
-				|| hasOrderTo(currentFloor, DOWN);
+		return hasOrderTo(currentFloor, UP) || hasOrderTo(currentFloor, DOWN);
 	}
-	
+
 	public boolean hasGoTo(int currentFloor) {
-		return orders.contains(new GoTo(currentFloor, UP)) || orders.contains(new GoTo(currentFloor, DOWN));
+		return orders.contains(new GoTo(currentFloor, UP))
+				|| orders.contains(new GoTo(currentFloor, DOWN));
+	}
+
+	public int countGoToAbove(int currentFloor) {
+		int countGotosUp = 0;
+		for (Order call : orders) {
+			if (call.isHigherThan(currentFloor) && call.isOutput()) {
+				countGotosUp++;
+			}
+		}
+		return countGotosUp;
+	}
+
+	public int countGoToBelow(int currentFloor) {
+		int countGotosDown = 0;
+		for (Order call : orders) {
+			if (call.isLowerThan(currentFloor) && call.isOutput()) {
+				countGotosDown++;
+			}
+		}
+		return countGotosDown;
 	}
 }

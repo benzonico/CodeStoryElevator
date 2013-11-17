@@ -43,7 +43,7 @@ public class Elevator {
 
 	private void resetFrequencies(int lower, int higher) {
 		frequencies = Maps.newTreeMap();
-		for(int floor = lower; floor < higher + 1; floor++){
+		for (int floor = lower; floor < higher + 1; floor++) {
 			frequencies.put(floor, 0);
 		}
 	}
@@ -74,7 +74,13 @@ public class Elevator {
 
 	private boolean shouldGoUp() {
 		if (currentDirection.isNil()) {
-			return orders.countOrdersBelow(currentFloor) <= orders.countOrdersAbove(currentFloor);
+			if (isCabinFull()) {
+				return orders.countGoToBelow(currentFloor) <= orders
+						.countGoToAbove(currentFloor);
+			} else {
+				return orders.countOrdersBelow(currentFloor) <= orders
+						.countOrdersAbove(currentFloor);
+			}
 		}
 		return currentDirection.isUp();
 	}
@@ -87,14 +93,19 @@ public class Elevator {
 			return orders.hasGoTo(currentFloor);
 		} else {
 			return orders.hasOrderTo(currentFloor, currentDirection)
-					|| (currentDirection.isNil() && orders.hasOrderTo(currentFloor));
+					|| (currentDirection.isNil() && orders
+							.hasOrderTo(currentFloor));
 		}
 	}
 
 	private boolean shouldChangeDirection() {
 		boolean shouldChange = true;
 		if (currentDirection.isUp()) {
-			shouldChange = orders.countOrdersAbove(currentFloor) == 0;
+			if (isCabinFull()) {
+				shouldChange = orders.countGoToAbove(currentFloor) == 0;
+			} else {
+				shouldChange = orders.countOrdersAbove(currentFloor) == 0;
+			}
 		}
 		if (currentDirection.isDown()) {
 			shouldChange = orders.countOrdersBelow(currentFloor) == 0;
@@ -131,9 +142,9 @@ public class Elevator {
 
 	private Command idle() {
 		Command idleCommand = doNothing();
-		if(currentFloor > getMiddleFloor()){
+		if (currentFloor > getMiddleFloor()) {
 			idleCommand = down();
-		}else if(currentFloor < getMiddleFloor()){
+		} else if (currentFloor < getMiddleFloor()) {
 			idleCommand = up();
 		}
 		return idleCommand;
@@ -142,7 +153,7 @@ public class Elevator {
 	private int getMiddleFloor() {
 		return frequencies.size() / 2;
 	}
-	
+
 	private Command doNothing() {
 		currentDirection = Direction.NIL;
 		return NOTHING;
@@ -189,7 +200,8 @@ public class Elevator {
 	}
 
 	public ElevatorStatus getStatus() {
-		return new ElevatorStatus(currentFloor, usersInCabin, cabinSize, open, currentDirection, frequencies);
+		return new ElevatorStatus(currentFloor, usersInCabin, cabinSize, open,
+				currentDirection, frequencies);
 	}
 
 }

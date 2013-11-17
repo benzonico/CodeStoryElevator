@@ -25,7 +25,7 @@ public class ElevatorTest {
 		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
 		checkNextCommands(NOTHING);
 	}
-	
+
 	@Test
 	public void should_open_doors_if_call_at_initial_floor() throws Exception {
 		elevator.call(0, Direction.UP);
@@ -40,20 +40,21 @@ public class ElevatorTest {
 
 	@Test
 	public void should_go_to_middle_floor_when_no_calls() throws Exception {
-		elevator.call(0,  Direction.UP);
+		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN, CLOSE);
 		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
 		checkNextCommands(NOTHING);
 	}
-	
+
 	@Test
-	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls() throws Exception{
+	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls()
+			throws Exception {
 		elevator.call(12, Direction.DOWN);
 		checkNextCommandSomeTimes(UP, 12);
 		checkNextCommands(OPEN, CLOSE);
 		checkNextCommands(DOWN, DOWN, NOTHING);
 	}
-	
+
 	@Test
 	public void oneUser_calling_at_0_and_going_to_1() throws Exception {
 		elevator.call(0, Direction.UP);
@@ -244,6 +245,27 @@ public class ElevatorTest {
 		elevator.userExited();
 		checkNextCommands(CLOSE, DOWN, OPEN);
 	}
+
+	@Test
+	public void should_change_direction_when_cabin_full_and_no_GoTo_above()
+			throws Exception {
+		elevator.reset(0, 3, 2);
+		elevator.call(1, Direction.UP);
+		elevator.call(2, Direction.DOWN);
+		elevator.call(2, Direction.DOWN);
+		elevator.call(3, Direction.DOWN);
+		checkNextCommands(UP, OPEN);
+		elevator.userEntered();
+		elevator.goTo(2);
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userExited();
+		elevator.userEntered();
+		elevator.userEntered();
+		elevator.goTo(0);
+		elevator.goTo(0);
+		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
+	}
+
 	private void checkNextCommandSomeTimes(Command command, int times) {
 		for (int i = 0; i < times; i++) {
 			checkNextCommands(command);
