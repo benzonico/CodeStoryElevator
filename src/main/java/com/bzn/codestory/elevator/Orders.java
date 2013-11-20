@@ -3,14 +3,15 @@ package com.bzn.codestory.elevator;
 import static com.bzn.codestory.elevator.Direction.DOWN;
 import static com.bzn.codestory.elevator.Direction.UP;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Orders {
-	private Set<Order> orders;
+	private List<Order> orders;
 
 	public Orders() {
-		orders = new HashSet<>();
+		orders = new ArrayList<>();
 	}
 
 	public boolean hasOrder() {
@@ -38,11 +39,13 @@ public class Orders {
 	}
 
 	public void remove(int currentFloor) {
-		// TODO change this big crap
-		orders.remove(new Call(currentFloor, UP));
-		orders.remove(new Call(currentFloor, DOWN));
-		orders.remove(new GoTo(currentFloor, UP));
-		orders.remove(new GoTo(currentFloor, DOWN));
+		Iterator<Order> iterOrders = orders.iterator();
+		while (iterOrders.hasNext()) {
+			Order order = (Order) iterOrders.next();
+			if (order.isAtFloor(currentFloor)) {
+				iterOrders.remove();
+			}
+		}
 	}
 
 	public void add(Order order) {
@@ -50,7 +53,7 @@ public class Orders {
 	}
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
-		return orders.contains(new Call(currentFloor, dir))
+		return orders.contains(new Call(currentFloor, dir, 0))
 				|| orders.contains(new GoTo(currentFloor, dir));
 	}
 

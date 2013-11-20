@@ -24,6 +24,8 @@ public class Elevator {
 	private Direction currentDirection;
 	private SortedMap<Integer, Integer> frequencies;
 
+	private int currentTime;
+
 	public Elevator() {
 		this(0);
 	}
@@ -54,9 +56,11 @@ public class Elevator {
 		open = false;
 		usersInCabin = 0;
 		currentDirection = Direction.NIL;
+		currentTime = 0;
 	}
 
 	public Command nextCommand() {
+		currentTime++;
 		if (open) {
 			return close();
 		}
@@ -164,7 +168,7 @@ public class Elevator {
 	}
 
 	public void call(int floor, Direction direction) {
-		orders.add(new Call(floor, direction));
+		orders.add(new Call(floor, direction, currentTime));
 		incrementFrequency(floor);
 	}
 
@@ -202,6 +206,10 @@ public class Elevator {
 	public ElevatorStatus getStatus() {
 		return new ElevatorStatus(currentFloor, usersInCabin, cabinSize, open,
 				currentDirection, frequencies);
+	}
+
+	public int getCurrentTime() {
+		return currentTime;
 	}
 
 }

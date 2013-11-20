@@ -2,8 +2,8 @@ package com.bzn.codestory.elevator;
 
 public abstract class Order {
 
-	private Direction direction;
-	private int floor;
+	protected Direction direction;
+	protected int floor;
 
 	protected Order(int floor, Direction direction) {
 		this.floor = floor;
@@ -36,6 +36,10 @@ public abstract class Order {
 		if (floor != other.floor)
 			return false;
 		return true;
+	}
+
+	public boolean isAtFloor(int currentFloor) {
+		return floor == currentFloor;
 	}
 
 	public boolean isHigherThan(int currentFloor) {
