@@ -66,6 +66,11 @@ public class Orders {
 				|| orders.contains(new GoTo(currentFloor, DOWN));
 	}
 
+	public boolean hasCallsFrom(int currentFloor) {
+		return orders.contains(new Call(currentFloor, UP, 0))
+				|| orders.contains(new Call(currentFloor, DOWN, 0));
+	}
+
 	public int countGoToAbove(int currentFloor) {
 		int countGotosUp = 0;
 		for (Order call : orders) {
@@ -84,5 +89,25 @@ public class Orders {
 			}
 		}
 		return countGotosDown;
+	}
+
+	public void forgetOldestGoToAtFloor(int currentFloor) {
+		forgetOldestOrderAtFloor(currentFloor, true);
+	}
+
+	public void forgetOldestCallAtFloor(int currentFloor) {
+		forgetOldestOrderAtFloor(currentFloor, false);
+	}
+
+	private void forgetOldestOrderAtFloor(int currentFloor, boolean output) {
+		Iterator<Order> iterator = orders.iterator();
+		boolean found = false;
+		while (!found && iterator.hasNext()) {
+			Order order = iterator.next();
+			if (order.isOutput() == output && order.isAtFloor(currentFloor)) {
+				found = true;
+				iterator.remove();
+			}
+		}
 	}
 }

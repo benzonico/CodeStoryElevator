@@ -35,13 +35,17 @@ public class ElevatorTest {
 	@Test
 	public void should_close_doors_if_opened() throws Exception {
 		elevator.call(0, Direction.UP);
-		checkNextCommands(OPEN, CLOSE);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		checkNextCommands(CLOSE);
 	}
 
 	@Test
 	public void should_go_to_middle_floor_when_no_calls() throws Exception {
 		elevator.call(0, Direction.UP);
-		checkNextCommands(OPEN, CLOSE);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
 		checkNextCommands(NOTHING);
 	}
@@ -51,8 +55,9 @@ public class ElevatorTest {
 			throws Exception {
 		elevator.call(12, Direction.DOWN);
 		checkNextCommandSomeTimes(UP, 12);
-		checkNextCommands(OPEN, CLOSE);
-		checkNextCommands(DOWN, DOWN, NOTHING);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		checkNextCommands(CLOSE, DOWN, DOWN, NOTHING);
 	}
 
 	@Test
@@ -264,6 +269,18 @@ public class ElevatorTest {
 		elevator.goTo(0);
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
+	}
+
+	@Test
+	public void should_not_close_doors_in_the_nose_of_users() {
+		elevator.reset(0, 3, 5);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(UP, OPEN);
+		elevator.userEntered();
+		elevator.call(1, Direction.DOWN);
+		checkNextCommands(NOTHING);
+		elevator.userEntered();
+		checkNextCommands(CLOSE);
 	}
 
 	private void checkNextCommandSomeTimes(Command command, int times) {

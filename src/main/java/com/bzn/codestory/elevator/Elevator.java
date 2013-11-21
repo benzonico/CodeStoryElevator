@@ -62,7 +62,11 @@ public class Elevator {
 	public Command nextCommand() {
 		currentTime++;
 		if (open) {
-			return close();
+			if (shouldClose()) {
+				return close();
+			} else {
+				return doNothing();
+			}
 		}
 		if (shouldOpen()) {
 			return open();
@@ -74,6 +78,10 @@ public class Elevator {
 			}
 		}
 		return idle();
+	}
+
+	private boolean shouldClose() {
+		return isCabinFull() || !orders.hasCallsFrom(currentFloor);
 	}
 
 	private boolean shouldGoUp() {
@@ -139,7 +147,6 @@ public class Elevator {
 	}
 
 	private Command open() {
-		removeAllCallOfCurrentFloor();
 		open = true;
 		return Command.OPEN;
 	}
@@ -163,10 +170,6 @@ public class Elevator {
 		return NOTHING;
 	}
 
-	private void removeAllCallOfCurrentFloor() {
-		orders.remove(currentFloor);
-	}
-
 	public void call(int floor, Direction direction) {
 		orders.add(new Call(floor, direction, currentTime));
 		incrementFrequency(floor);
@@ -182,6 +185,7 @@ public class Elevator {
 
 	public void userEntered() {
 		usersInCabin++;
+		orders.forgetOldestCallAtFloor(currentFloor);
 	}
 
 	public int usersInCabin() {
@@ -190,6 +194,7 @@ public class Elevator {
 
 	public void userExited() {
 		usersInCabin--;
+		orders.forgetOldestGoToAtFloor(currentFloor);
 	}
 
 	public Integer[] getFrequencies() {
