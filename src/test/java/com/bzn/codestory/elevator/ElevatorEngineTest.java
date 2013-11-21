@@ -43,7 +43,7 @@ public class ElevatorEngineTest {
 			// required to release the connection
 			getResponseAsString(get, response.getEntity());
 			int code = response.getStatusLine().getStatusCode();
-			assertThat(code).isEqualTo(HttpStatus.SC_OK);
+			assertThat(code).as("Domain should return OK: "+domains[i]).isEqualTo(HttpStatus.SC_OK);
 		}
 	}
 

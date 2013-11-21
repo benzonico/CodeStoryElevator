@@ -18,6 +18,8 @@ public class Elevator {
 
 	int currentFloor;
 	private int cabinSize;
+	private int lower;
+	private int higher;
 	private Orders orders;
 	private boolean open;
 	private int usersInCabin;
@@ -37,6 +39,8 @@ public class Elevator {
 	}
 
 	public void reset(int lower, int higher, int cabinSize) {
+		this.lower = lower;
+		this.higher = higher;
 		resetFrequencies(lower, higher);
 		currentFloor = 0;
 		this.cabinSize = cabinSize;
@@ -52,7 +56,7 @@ public class Elevator {
 
 	private void reset() {
 		currentFloor = 0;
-		orders = new Orders();
+		orders = new Orders(lower, higher);
 		open = false;
 		usersInCabin = 0;
 		currentDirection = Direction.NIL;

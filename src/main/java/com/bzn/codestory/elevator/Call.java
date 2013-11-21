@@ -12,11 +12,6 @@ public class Call extends Order {
 		this.callTime = callTime;
 	}
 
-	@Override
-	public boolean isOutput() {
-		return false;
-	}
-
 	public int getPotentialMaxScore(int currentFloor, int lowerFloor,
 			int higherFloor, int currentTime, Direction currentDir) {
 

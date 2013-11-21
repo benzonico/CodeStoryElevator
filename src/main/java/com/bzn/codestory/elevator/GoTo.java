@@ -5,10 +5,4 @@ public class GoTo extends Order {
 	public GoTo(int floor, Direction direction) {
 		super(floor, direction);
 	}
-
-	@Override
-	public boolean isOutput() {
-		return true;
-	}
-
 }

@@ -1,28 +1,40 @@
 package com.bzn.codestory.elevator;
 
-import static com.bzn.codestory.elevator.Direction.DOWN;
-import static com.bzn.codestory.elevator.Direction.UP;
-
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Queue;
+import java.util.SortedMap;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 
 public class Orders {
-	private List<Order> orders;
+	private SortedMap<Integer, Queue<Call>> calls;
+	private SortedMap<Integer, Queue<GoTo>> gotos;
 
-	public Orders() {
-		orders = new ArrayList<>();
+	public Orders(int lower, int higher) {
+		calls = Maps.newTreeMap();
+		gotos = Maps.newTreeMap();
+		for (int floor = lower; floor < higher + 1; floor++) {
+			calls.put(floor, Queues.<Call> newArrayDeque());
+			gotos.put(floor, Queues.<GoTo> newArrayDeque());
+		}
 	}
 
 	public boolean hasOrder() {
-		return !orders.isEmpty();
+		boolean hasOrders = false;
+		Iterator<Integer> iterator = calls.keySet().iterator();
+		while (iterator.hasNext() && !hasOrders) {
+			int floor = iterator.next();
+			hasOrders = hasOrderTo(floor);
+		}
+		return hasOrders;
 	}
 
 	public int countOrdersAbove(int currentFloor) {
 		int countCallsUp = 0;
-		for (Order call : orders) {
-			if (call.isHigherThan(currentFloor)) {
-				countCallsUp++;
+		for (Integer floor: calls.keySet()) {
+			if (floor > currentFloor) {
+				countCallsUp += calls.get(floor).size() + gotos.get(floor).size();
 			}
 		}
 		return countCallsUp;
@@ -30,52 +42,44 @@ public class Orders {
 
 	public int countOrdersBelow(int currentFloor) {
 		int countCallsDown = 0;
-		for (Order call : orders) {
-			if (call.isLowerThan(currentFloor)) {
-				countCallsDown++;
+		for (Integer floor: calls.keySet()) {
+			if (floor < currentFloor) {
+				countCallsDown += calls.get(floor).size() + gotos.get(floor).size();
 			}
 		}
 		return countCallsDown;
 	}
 
-	public void remove(int currentFloor) {
-		Iterator<Order> iterOrders = orders.iterator();
-		while (iterOrders.hasNext()) {
-			Order order = (Order) iterOrders.next();
-			if (order.isAtFloor(currentFloor)) {
-				iterOrders.remove();
-			}
-		}
+	public void add(Call order) {
+		calls.get(order.floor).add(order);
 	}
 
-	public void add(Order order) {
-		orders.add(order);
+	public void add(GoTo order) {
+		gotos.get(order.floor).add(order);
 	}
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
-		return orders.contains(new Call(currentFloor, dir, 0))
-				|| orders.contains(new GoTo(currentFloor, dir));
+		return calls.get(currentFloor).contains(new Call(currentFloor, dir, 0))
+				|| gotos.get(currentFloor).contains(new GoTo(currentFloor, dir));
 	}
 
 	public boolean hasOrderTo(int currentFloor) {
-		return hasOrderTo(currentFloor, UP) || hasOrderTo(currentFloor, DOWN);
+		return hasCallsFrom(currentFloor) || hasGoTo(currentFloor);
 	}
 
 	public boolean hasGoTo(int currentFloor) {
-		return orders.contains(new GoTo(currentFloor, UP))
-				|| orders.contains(new GoTo(currentFloor, DOWN));
+		return !gotos.get(currentFloor).isEmpty();
 	}
 
 	public boolean hasCallsFrom(int currentFloor) {
-		return orders.contains(new Call(currentFloor, UP, 0))
-				|| orders.contains(new Call(currentFloor, DOWN, 0));
+		return !calls.get(currentFloor).isEmpty();
 	}
 
 	public int countGoToAbove(int currentFloor) {
 		int countGotosUp = 0;
-		for (Order call : orders) {
-			if (call.isHigherThan(currentFloor) && call.isOutput()) {
-				countGotosUp++;
+		for (int floor : gotos.keySet()) {
+			if (floor > currentFloor) {
+				countGotosUp += gotos.get(floor).size();
 			}
 		}
 		return countGotosUp;
@@ -83,31 +87,23 @@ public class Orders {
 
 	public int countGoToBelow(int currentFloor) {
 		int countGotosDown = 0;
-		for (Order call : orders) {
-			if (call.isLowerThan(currentFloor) && call.isOutput()) {
-				countGotosDown++;
+		for (int floor : gotos.keySet()) {
+			if (floor < currentFloor) {
+				countGotosDown += gotos.get(floor).size();
 			}
 		}
 		return countGotosDown;
 	}
 
 	public void forgetOldestGoToAtFloor(int currentFloor) {
-		forgetOldestOrderAtFloor(currentFloor, true);
+		if (!gotos.get(currentFloor).isEmpty()) {
+			gotos.get(currentFloor).remove();
+		}
 	}
 
 	public void forgetOldestCallAtFloor(int currentFloor) {
-		forgetOldestOrderAtFloor(currentFloor, false);
-	}
-
-	private void forgetOldestOrderAtFloor(int currentFloor, boolean output) {
-		Iterator<Order> iterator = orders.iterator();
-		boolean found = false;
-		while (!found && iterator.hasNext()) {
-			Order order = iterator.next();
-			if (order.isOutput() == output && order.isAtFloor(currentFloor)) {
-				found = true;
-				iterator.remove();
-			}
+		if (!calls.get(currentFloor).isEmpty()) {
+			calls.get(currentFloor).remove();
 		}
 	}
 }

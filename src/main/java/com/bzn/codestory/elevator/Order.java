@@ -10,8 +10,6 @@ public abstract class Order {
 		this.direction = direction;
 	}
 
-	public abstract boolean isOutput();
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
