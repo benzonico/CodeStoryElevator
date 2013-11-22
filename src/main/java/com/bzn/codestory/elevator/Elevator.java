@@ -166,7 +166,7 @@ public class Elevator {
 	}
 
 	private int getMiddleFloor() {
-		return frequencies.size() / 2;
+		return lower + frequencies.size() / 2;
 	}
 
 	private Command doNothing() {

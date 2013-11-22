@@ -51,6 +51,16 @@ public class ElevatorTest {
 	}
 
 	@Test
+	public void should_go_to_real_middle_floor_when_no_calls_and_lower_floor_underground()
+			throws Exception {
+		elevator.reset(-2, 4, 30); /* middle floor should be 1 */
+		elevator.call(0, Direction.UP);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		checkNextCommands(CLOSE, UP, NOTHING);
+	}
+
+	@Test
 	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls()
 			throws Exception {
 		elevator.call(12, Direction.DOWN);
