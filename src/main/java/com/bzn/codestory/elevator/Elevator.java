@@ -25,6 +25,9 @@ public class Elevator {
 	private int usersInCabin;
 	private Direction currentDirection;
 	private SortedMap<Integer, Integer> frequencies;
+	
+	private CrowdedElevatorAlgorithm crowdedElevatorAlgorithm;
+	private OneDirectionElevatorAlgorithm oneDirectionElevatorAlgorithm;
 
 	private int currentTime;
 
@@ -36,6 +39,8 @@ public class Elevator {
 	Elevator(int startFloor) {
 		reset(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_SIZE);
 		currentFloor = startFloor;
+		crowdedElevatorAlgorithm = new CrowdedElevatorAlgorithm(this);
+		oneDirectionElevatorAlgorithm = new OneDirectionElevatorAlgorithm(this);
 	}
 
 	public void reset(int lower, int higher, int cabinSize) {
@@ -64,18 +69,19 @@ public class Elevator {
 	}
 
 	public Command nextCommand() {
-		currentTime++;
+		ElevatorAlgorithm algorithm = chooseAlgorithm();
+		increaseCurrentTime();
 		if (open) {
-			if (shouldClose()) {
+			if (algorithm.shouldClose()) {
 				return close();
 			} else {
 				return doNothing();
 			}
 		}
-		if (shouldOpen()) {
+		if (algorithm.shouldOpen()) {
 			return open();
 		} else if (orders.hasOrder()) {
-			if (shouldGoUp()) {
+			if (algorithm.shouldGoUp()) {
 				return up();
 			} else {
 				return down();
@@ -84,49 +90,16 @@ public class Elevator {
 		return idle();
 	}
 
-	private boolean shouldClose() {
-		return isCabinFull() || !orders.hasCallsFrom(currentFloor);
+	private void increaseCurrentTime() {
+		currentTime++;
 	}
 
-	private boolean shouldGoUp() {
-		if (currentDirection.isNil()) {
-			if (isCabinFull()) {
-				return orders.countGoToBelow(currentFloor) <= orders
-						.countGoToAbove(currentFloor);
-			} else {
-				return orders.countOrdersBelow(currentFloor) <= orders
-						.countOrdersAbove(currentFloor);
-			}
-		}
-		return currentDirection.isUp();
-	}
-
-	private boolean shouldOpen() {
-		if (shouldChangeDirection()) {
-			currentDirection = Direction.NIL;
-		}
+	private ElevatorAlgorithm chooseAlgorithm() {
 		if (isCabinFull()) {
-			return orders.hasGoTo(currentFloor);
+			return crowdedElevatorAlgorithm;
 		} else {
-			return orders.hasOrderTo(currentFloor, currentDirection)
-					|| (currentDirection.isNil() && orders
-							.hasOrderTo(currentFloor));
+			return oneDirectionElevatorAlgorithm;
 		}
-	}
-
-	private boolean shouldChangeDirection() {
-		boolean shouldChange = true;
-		if (currentDirection.isUp()) {
-			if (isCabinFull()) {
-				shouldChange = orders.countGoToAbove(currentFloor) == 0;
-			} else {
-				shouldChange = orders.countOrdersAbove(currentFloor) == 0;
-			}
-		}
-		if (currentDirection.isDown()) {
-			shouldChange = orders.countOrdersBelow(currentFloor) == 0;
-		}
-		return shouldChange;
 	}
 
 	private boolean isCabinFull() {
@@ -219,6 +192,18 @@ public class Elevator {
 
 	public int getCurrentTime() {
 		return currentTime;
+	}
+
+	public Direction getCurrentDirection() {
+		return currentDirection;
+	}
+
+	public Orders getOrders() {
+		return orders;
+	}
+
+	public void setCurrentDirection(Direction direction) {
+		this.currentDirection = direction;
 	}
 
 }
