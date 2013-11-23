@@ -106,4 +106,16 @@ public class Orders {
 			calls.get(currentFloor).remove();
 		}
 	}
+
+	public Queue<Call> getCallsAtFloor(int floor) {
+		return calls.get(floor);
+	}
+
+	public int countCalls() {
+		int countCalls = 0;
+		for (int floor : calls.keySet()) {
+			countCalls += calls.get(floor).size();
+		}
+		return countCalls;
+	}
 }

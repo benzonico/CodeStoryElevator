@@ -5,6 +5,8 @@ import static com.bzn.codestory.elevator.Command.DOWN;
 import static com.bzn.codestory.elevator.Command.NOTHING;
 import static com.bzn.codestory.elevator.Command.UP;
 
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.SortedMap;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -28,6 +30,7 @@ public class Elevator {
 	
 	private CrowdedElevatorAlgorithm crowdedElevatorAlgorithm;
 	private OneDirectionElevatorAlgorithm oneDirectionElevatorAlgorithm;
+	private VipElevatorAlgorithm vipElevatorAlgorithm;
 
 	private int currentTime;
 
@@ -41,6 +44,7 @@ public class Elevator {
 		currentFloor = startFloor;
 		crowdedElevatorAlgorithm = new CrowdedElevatorAlgorithm(this);
 		oneDirectionElevatorAlgorithm = new OneDirectionElevatorAlgorithm(this);
+		vipElevatorAlgorithm = new VipElevatorAlgorithm(this);
 	}
 
 	public void reset(int lower, int higher, int cabinSize) {
@@ -97,9 +101,15 @@ public class Elevator {
 	private ElevatorAlgorithm chooseAlgorithm() {
 		if (isCabinFull()) {
 			return crowdedElevatorAlgorithm;
+		} else if (rushInCabin()) {
+			return vipElevatorAlgorithm;
 		} else {
 			return oneDirectionElevatorAlgorithm;
 		}
+	}
+
+	private boolean rushInCabin() {
+		return usersInCabin > cabinSize / 3;
 	}
 
 	private boolean isCabinFull() {
@@ -202,8 +212,49 @@ public class Elevator {
 		return orders;
 	}
 
+	public int getLower() {
+		return lower;
+	}
+
+	public int getHigher() {
+		return higher;
+	}
+
 	public void setCurrentDirection(Direction direction) {
 		this.currentDirection = direction;
+	}
+
+	private int getRemainingPlacesInCabin() {
+		return cabinSize - usersInCabin;
+	}
+
+	public int getPotentialScoreForCurrentFloor() {
+		return getPotentialScoreForFloor(currentFloor);
+	}
+
+
+	public int getPotentialScoreForFloor(int floor) {
+		Queue<Call> callsQueue = orders.getCallsAtFloor(floor);
+		Iterator<Call> callsIterator = callsQueue.iterator();
+		int floorPotentialScore = 0;
+		int usersInspected = 0;
+		while (callsIterator.hasNext()
+				&& usersInspected < getRemainingPlacesInCabin()) {
+			floorPotentialScore = floorPotentialScore
+					+ callsIterator.next().getPotentialMaxScore(floor,
+							lower, higher,
+							currentTime, currentDirection);
+			usersInspected++;
+		}
+		return floorPotentialScore;
+	}
+
+	public boolean isAtTop() {
+		return currentFloor == higher;
+	}
+
+	public boolean isAtBottom() {
+		return currentFloor == lower;
 	}
 
 }
