@@ -28,10 +28,11 @@ public class Call extends Order {
 			}
 		}
 
-		return 20
+		int potentialScore = 20
 				- waitWeight
 				* (getWaitingTime(currentTime) + Math.abs(floor - currentFloor))
 				- travelWeight * (potentialTravelTime);
+		return Math.max(0, potentialScore);
 	}
 
 	public int getWaitingTime(int currentTime) {
