@@ -42,10 +42,6 @@ public class ElevatorTest {
 
 	@Test
 	public void should_go_to_middle_floor_when_no_calls() throws Exception {
-		elevator.call(0, Direction.UP);
-		checkNextCommands(OPEN);
-		elevator.userEntered();
-		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
 		checkNextCommands(NOTHING);
 	}
@@ -54,20 +50,21 @@ public class ElevatorTest {
 	public void should_go_to_real_middle_floor_when_no_calls_and_lower_floor_underground()
 			throws Exception {
 		elevator.reset(-2, 4, 30); /* middle floor should be 1 */
-		elevator.call(0, Direction.UP);
-		checkNextCommands(OPEN);
-		elevator.userEntered();
-		checkNextCommands(CLOSE, UP, NOTHING);
+		checkNextCommands(UP, NOTHING);
 	}
 
 	@Test
 	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls()
 			throws Exception {
-		elevator.call(12, Direction.DOWN);
-		checkNextCommandSomeTimes(UP, 12);
-		checkNextCommands(OPEN);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(UP, OPEN);
 		elevator.userEntered();
-		checkNextCommands(CLOSE, DOWN, DOWN, NOTHING);
+		elevator.goTo(11);
+		checkNextCommands(CLOSE);
+		checkNextCommandSomeTimes(UP, 10);
+		checkNextCommands(OPEN);
+		elevator.userExited();
+		checkNextCommands(CLOSE, DOWN, NOTHING);
 	}
 
 	@Test
@@ -131,10 +128,10 @@ public class ElevatorTest {
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
 		elevator.userEntered();
-		elevator.userEntered();
-		assertThat(elevator.usersInCabin()).isEqualTo(2);
 		elevator.goTo(1);
+		elevator.userEntered();
 		elevator.goTo(2);
+		assertThat(elevator.usersInCabin()).isEqualTo(2);
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(1);
@@ -199,28 +196,6 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_increment_frequencies() throws Exception {
-		// Not a magic number
-		final int numberOfCalls = 42;
-		final int floor = 3;
-		final Direction direction = Direction.DOWN;
-
-		assertThat(elevator.getFrequencies()[floor]).isZero();
-
-		for (int callCounter = 0; callCounter < numberOfCalls; callCounter++) {
-			elevator.call(floor, direction);
-		}
-		assertThat(elevator.getFrequencies()[floor]).isEqualTo(numberOfCalls);
-
-		final int newFloors = 7;
-		final int newCabinSize = 5;
-		elevator.reset(0, newFloors - 1, newCabinSize);
-
-		assertThat(elevator.getFrequencies()[floor]).isZero();
-
-	}
-
-	@Test
 	public void should_go_6ft_under() throws Exception {
 		elevator.reset(-6, 6, 6);
 		elevator.call(-6, Direction.UP);
@@ -235,12 +210,13 @@ public class ElevatorTest {
 		elevator.call(2, Direction.UP);
 		checkNextCommands(UP, OPEN);
 		elevator.userEntered();
-		elevator.userEntered();
 		elevator.goTo(2);
+		elevator.userEntered();
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
 		elevator.userEntered();
+		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, OPEN);
 	}
 

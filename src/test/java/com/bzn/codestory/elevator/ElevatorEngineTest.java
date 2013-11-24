@@ -32,11 +32,12 @@ public class ElevatorEngineTest {
 	@Test
 	public void initServices_should_listen_on_specified_port()
 			throws ClientProtocolException, IOException {
-		String[] domains = { "go", "call", "reset", "userHasEntered",
+		String[] domains = { "reset", "call", "userHasEntered", "go",
 				"userHasExited", "nextCommands" };
-		String[] params = { "?cabin=0&floorToGo=1", "?atFloor=2&to=UP",
+		String[] params = {
 				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours&cabinCount=1",
-				"?cabin=0", "?cabin=0", "" };
+				"?atFloor=0&to=UP", "?cabin=0", "?cabin=0&floorToGo=1",
+				"?cabin=0", "" };
 		for (int i = 0; i < domains.length; i++) {
 			HttpGet get = new HttpGet("http://localhost:" + PORT + "/"
 					+ domains[i] + params[i]);
@@ -59,11 +60,11 @@ public class ElevatorEngineTest {
 	}
 
 	@Test
-	public void frequencies_should_be_displayed_after_reset_and_calls()
+	public void elevator_status_should_be_displayed_after_reset_and_calls()
 			throws ClientProtocolException, IOException {
 		String[] domains = { "reset", "call", "call" };
 		String[] params = { "?lowerFloor=0&higherFloor=2&cabinSize=3&cause=toujours&cabinCount=1",
-				"?atFloor=1&to=UP", "?atFloor=1&to=UP" };
+				"?atFloor=1&to=UP", "?atFloor=1&to=DOWN" };
 		for (int i = 0; i < domains.length; i++) {
 			HttpGet get = new HttpGet("http://localhost:" + PORT + "/"
 					+ domains[i] + params[i]);
@@ -82,8 +83,9 @@ public class ElevatorEngineTest {
 		assertThat(code).isEqualTo(HttpStatus.SC_OK);
 		assertThat(response.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue())
 				.isEqualTo(ContentType.APPLICATION_JSON.getMimeType());
-		assertThat(statusJson).startsWith("{")
-				.contains("\"frequencies\":{\"0\":0,\"1\":2,")
+		assertThat(statusJson).isNotNull().startsWith("{")
+				.contains(
+						"\"usersCalling\":{\"0\":[],\"1\":[{\"call\":{\"direction\":\"UP\",\"floor\":1}},{\"call\":{\"direction\":\"DOWN\",\"floor\":1}}]")
 				.endsWith("}");
 	}
 }
