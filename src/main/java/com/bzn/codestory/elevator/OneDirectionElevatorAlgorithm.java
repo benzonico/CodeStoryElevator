@@ -8,7 +8,7 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 
 	@Override
 	public boolean shouldClose() {
-		return !getElevator().getOrders().hasCallsFrom(
+		return !getElevator().getUsers().hasUsersCallingFrom(
 				getElevator().currentFloor);
 	}
 
@@ -17,21 +17,21 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 		if (shouldChangeDirection()) {
 			getElevator().setCurrentDirection(Direction.NIL);
 		}
-		return getElevator().getOrders().hasOrderTo(getElevator().currentFloor,
+		return getElevator().getUsers().hasOrderTo(getElevator().currentFloor,
 				getElevator().getCurrentDirection())
 				|| (getElevator().getCurrentDirection().isNil() && getElevator()
-						.getOrders().hasOrderTo(getElevator().currentFloor));
+						.getUsers().hasOrderTo(getElevator().currentFloor));
 	}
 
 	@Override
 	public boolean shouldChangeDirection() {
 		boolean shouldChange = true;
 		if (getElevator().getCurrentDirection().isUp()) {
-			shouldChange = getElevator().getOrders().countOrdersAbove(
+			shouldChange = getElevator().getUsers().countUsersAbove(
 					getElevator().currentFloor) == 0;
 		}
 		if (getElevator().getCurrentDirection().isDown()) {
-			shouldChange = getElevator().getOrders().countOrdersBelow(
+			shouldChange = getElevator().getUsers().countUsersBelow(
 					getElevator().currentFloor) == 0;
 		}
 		return shouldChange;
@@ -40,9 +40,9 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldGoUp() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return getElevator().getOrders().countOrdersBelow(
-					getElevator().currentFloor) <= getElevator().getOrders()
-					.countOrdersAbove(getElevator().currentFloor);
+			return getElevator().getUsers().countUsersBelow(
+					getElevator().currentFloor) <= getElevator().getUsers()
+					.countUsersAbove(getElevator().currentFloor);
 		}
 		return getElevator().getCurrentDirection().isUp();
 	}

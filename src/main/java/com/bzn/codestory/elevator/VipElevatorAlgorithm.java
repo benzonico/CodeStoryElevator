@@ -20,7 +20,7 @@ public class VipElevatorAlgorithm extends ElevatorAlgorithm {
 	public boolean shouldOpen() {
 		boolean hasCallsMakingPoints = getElevator()
 				.getPotentialScoreForCurrentFloor() > 0;
-		boolean hasGotos = getElevator().getOrders().hasGoTo(
+		boolean hasGotos = getElevator().getUsers().hasUsersGoingTo(
 				getElevator().currentFloor);
 		boolean shouldOpen = hasCallsMakingPoints || hasGotos;
 		if (shouldChangeDirection()) {
@@ -44,12 +44,12 @@ public class VipElevatorAlgorithm extends ElevatorAlgorithm {
 	public boolean shouldChangeDirection() {
 		boolean shouldChange = false;
 		if (getElevator().getCurrentDirection().isUp()) {
-			shouldChange = (getElevator().getOrders()
+			shouldChange = (getElevator().getUsers()
 					.countGoToAbove(getElevator().currentFloor) == 0 && getPotentialScoreUpper() < getPotentialScoreLower())
 					|| getElevator().isAtTop();
 		}
 		if (getElevator().getCurrentDirection().isDown()) {
-			shouldChange = (getElevator().getOrders().countGoToAbove(
+			shouldChange = (getElevator().getUsers().countGoToAbove(
 					getElevator().currentFloor) == 0 && getPotentialScoreLower() < getPotentialScoreUpper())
 					|| getElevator().isAtBottom();
 		}

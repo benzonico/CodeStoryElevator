@@ -5,12 +5,9 @@ import static com.bzn.codestory.elevator.Command.DOWN;
 import static com.bzn.codestory.elevator.Command.NOTHING;
 import static com.bzn.codestory.elevator.Command.UP;
 
-import java.util.Iterator;
-import java.util.Queue;
-import java.util.SortedMap;
+import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Maps;
 
 public class Elevator {
 
@@ -22,12 +19,10 @@ public class Elevator {
 	private int cabinSize;
 	private int lower;
 	private int higher;
-	private Orders orders;
+	private Users users;
 	private boolean open;
-	private int usersInCabin;
 	private Direction currentDirection;
-	private SortedMap<Integer, Integer> frequencies;
-	
+
 	private CrowdedElevatorAlgorithm crowdedElevatorAlgorithm;
 	private OneDirectionElevatorAlgorithm oneDirectionElevatorAlgorithm;
 	private VipElevatorAlgorithm vipElevatorAlgorithm;
@@ -50,24 +45,15 @@ public class Elevator {
 	public void reset(int lower, int higher, int cabinSize) {
 		this.lower = lower;
 		this.higher = higher;
-		resetFrequencies(lower, higher);
 		currentFloor = 0;
 		this.cabinSize = cabinSize;
 		reset();
 	}
 
-	private void resetFrequencies(int lower, int higher) {
-		frequencies = Maps.newTreeMap();
-		for (int floor = lower; floor < higher + 1; floor++) {
-			frequencies.put(floor, 0);
-		}
-	}
-
 	private void reset() {
 		currentFloor = 0;
-		orders = new Orders(lower, higher);
+		users = new Users(lower, higher);
 		open = false;
-		usersInCabin = 0;
 		currentDirection = Direction.NIL;
 		currentTime = 0;
 	}
@@ -84,7 +70,7 @@ public class Elevator {
 		}
 		if (algorithm.shouldOpen()) {
 			return open();
-		} else if (orders.hasOrder()) {
+		} else if (users.hasOrder()) {
 			if (algorithm.shouldGoUp()) {
 				return up();
 			} else {
@@ -109,11 +95,11 @@ public class Elevator {
 	}
 
 	private boolean rushInCabin() {
-		return usersInCabin > cabinSize / 3;
+		return users.countUsersInCabin() > cabinSize / 3;
 	}
 
 	private boolean isCabinFull() {
-		return usersInCabin == cabinSize;
+		return users.countUsersInCabin() == cabinSize;
 	}
 
 	private Command down() {
@@ -149,7 +135,7 @@ public class Elevator {
 	}
 
 	private int getMiddleFloor() {
-		return lower + frequencies.size() / 2;
+		return lower + Math.abs(higher - lower + 1) / 2;
 	}
 
 	private Command doNothing() {
@@ -158,8 +144,7 @@ public class Elevator {
 	}
 
 	public void call(int floor, Direction direction) {
-		orders.add(new Call(floor, direction, currentTime));
-		incrementFrequency(floor);
+		users.userCalls(new Call(floor, direction), currentTime);
 	}
 
 	public void goTo(int floor) {
@@ -167,37 +152,21 @@ public class Elevator {
 		if (floor < currentFloor) {
 			dir = Direction.DOWN;
 		}
-		orders.add(new GoTo(floor, dir));
+		users.userWantsToGoTo(new GoTo(floor, dir), currentFloor);
 	}
 
 	public void userEntered() {
-		usersInCabin++;
-		orders.forgetOldestCallAtFloor(currentFloor);
-	}
-
-	public int usersInCabin() {
-		return usersInCabin;
+		users.enter(currentFloor, currentTime);
 	}
 
 	public void userExited() {
-		usersInCabin--;
-		orders.forgetOldestGoToAtFloor(currentFloor);
-	}
-
-	public Integer[] getFrequencies() {
-		if (frequencies == null) {
-			resetFrequencies(0, DEFAULT_FLOORS);
-		}
-		return frequencies.values().toArray(new Integer[0]);
-	}
-
-	private void incrementFrequency(int floor) {
-		frequencies.put(floor, frequencies.get(floor) + 1);
+		users.userExitsAt(currentFloor);
 	}
 
 	public ElevatorStatus getStatus() {
-		return new ElevatorStatus(currentFloor, usersInCabin, cabinSize, open,
-				currentDirection, frequencies);
+		return new ElevatorStatus(currentFloor, usersInCabin(), cabinSize,
+				open,
+				currentDirection, users);
 	}
 
 	public int getCurrentTime() {
@@ -208,8 +177,8 @@ public class Elevator {
 		return currentDirection;
 	}
 
-	public Orders getOrders() {
-		return orders;
+	public Users getUsers() {
+		return users;
 	}
 
 	public int getLower() {
@@ -225,26 +194,21 @@ public class Elevator {
 	}
 
 	private int getRemainingPlacesInCabin() {
-		return cabinSize - usersInCabin;
+		return cabinSize - users.countUsersInCabin();
 	}
 
 	public int getPotentialScoreForCurrentFloor() {
 		return getPotentialScoreForFloor(currentFloor);
 	}
 
-
 	public int getPotentialScoreForFloor(int floor) {
-		Queue<Call> callsQueue = orders.getCallsAtFloor(floor);
-		Iterator<Call> callsIterator = callsQueue.iterator();
+		List<User> usersToInspect = users.getUsersThatCanBeTakenInCabinAtFloor(
+				floor, getRemainingPlacesInCabin());
 		int floorPotentialScore = 0;
-		int usersInspected = 0;
-		while (callsIterator.hasNext()
-				&& usersInspected < getRemainingPlacesInCabin()) {
+		for (User user : usersToInspect) {
 			floorPotentialScore = floorPotentialScore
-					+ callsIterator.next().getPotentialMaxScore(floor,
-							lower, higher,
-							currentTime, currentDirection);
-			usersInspected++;
+					+ user.getPotentialMaxScore(currentFloor, currentDirection,
+							lower, higher, currentTime);
 		}
 		return floorPotentialScore;
 	}
@@ -255,6 +219,10 @@ public class Elevator {
 
 	public boolean isAtBottom() {
 		return currentFloor == lower;
+	}
+
+	public int usersInCabin() {
+		return users.countUsersInCabin();
 	}
 
 }

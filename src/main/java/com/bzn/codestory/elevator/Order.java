@@ -48,4 +48,12 @@ public abstract class Order {
 		return floor < currentFloor;
 	}
 
+	public Direction getDirection() {
+		return direction;
+	}
+
+	public int getFloor() {
+		return floor;
+	}
+
 }

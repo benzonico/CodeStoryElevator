@@ -14,9 +14,9 @@ public class CrowdedElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldGoUp() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return getElevator().getOrders().countGoToBelow(
+			return getElevator().getUsers().countGoToBelow(
 					getElevator().currentFloor) <= getElevator()
-					.getOrders()
+					.getUsers()
 					.countGoToAbove(getElevator().currentFloor);
 		}
 		return getElevator().getCurrentDirection().isUp();
@@ -27,18 +27,18 @@ public class CrowdedElevatorAlgorithm extends ElevatorAlgorithm {
 		if (shouldChangeDirection()) {
 			getElevator().setCurrentDirection(Direction.NIL);
 		}
-		return getElevator().getOrders().hasGoTo(getElevator().currentFloor);
+		return getElevator().getUsers().hasUsersGoingTo(getElevator().currentFloor);
 	}
 
 	@Override
 	public boolean shouldChangeDirection() {
 		boolean shouldChange = true;
 		if (getElevator().getCurrentDirection().isUp()) {
-			shouldChange = getElevator().getOrders().countGoToAbove(
+			shouldChange = getElevator().getUsers().countGoToAbove(
 					getElevator().currentFloor) == 0;
 		}
 		if (getElevator().getCurrentDirection().isDown()) {
-			shouldChange = getElevator().getOrders().countGoToBelow(
+			shouldChange = getElevator().getUsers().countGoToBelow(
 					getElevator().currentFloor) == 0;
 		}
 		return shouldChange;

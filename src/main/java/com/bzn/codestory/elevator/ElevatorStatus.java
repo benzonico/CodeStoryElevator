@@ -2,7 +2,6 @@ package com.bzn.codestory.elevator;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.SortedMap;
 
 class ElevatorStatus {
 
@@ -11,18 +10,19 @@ class ElevatorStatus {
 	public int cabinSize;
 	public boolean open;
 	public Direction currentDirection;
-	public SortedMap<Integer, Integer> frequencies;
+	public Users users;
 	public String gitBranch;
 	public String gitCommit;
 	public String gitDate;
 
-	ElevatorStatus(int currentFloor, int usersInCabin, int cabinSize, boolean open, Direction currentDirection, SortedMap<Integer, Integer> frequencies) {
+	ElevatorStatus(int currentFloor, int usersInCabin, int cabinSize,
+			boolean open, Direction currentDirection, Users users) {
 		this.currentFloor = currentFloor;
 		this.usersInCabin = usersInCabin;
 		this.cabinSize = cabinSize;
 		this.open = open;
 		this.currentDirection = currentDirection;
-		this.frequencies = frequencies;
+		this.users = users;
 		Properties versionProperties = new Properties();
 		try {
 			versionProperties.load(getClass().getResourceAsStream("/version.properties"));
