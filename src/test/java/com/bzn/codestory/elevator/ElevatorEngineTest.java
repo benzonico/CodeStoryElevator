@@ -34,8 +34,9 @@ public class ElevatorEngineTest {
 			throws ClientProtocolException, IOException {
 		String[] domains = { "go", "call", "reset", "userHasEntered",
 				"userHasExited", "nextCommands" };
-		String[] params = { "?floorToGo=1", "?atFloor=2&to=UP",
-				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours&cabinCount=1", "", "", "" };
+		String[] params = { "?cabin=0&floorToGo=1", "?atFloor=2&to=UP",
+				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours&cabinCount=1",
+				"?cabin=0", "?cabin=0", "" };
 		for (int i = 0; i < domains.length; i++) {
 			HttpGet get = new HttpGet("http://localhost:" + PORT + "/"
 					+ domains[i] + params[i]);

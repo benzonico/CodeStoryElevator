@@ -2,6 +2,9 @@ package com.bzn.codestory.elevator;
 
 import static spark.Spark.get;
 import static spark.Spark.setPort;
+
+import org.apache.commons.lang3.StringUtils;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -11,7 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElevatorEngine {
 
-	private final static Elevator elevator = new Elevator();
+	private static Elevator[] elevators = new Elevator[1];
+	static {
+		elevators[0] = new Elevator();
+	}
 
 	public static void main(String[] args) {
 		ElevatorEngine.initServices(Integer.parseInt(System
@@ -25,7 +31,7 @@ public class ElevatorEngine {
 			public Object handle(Request req, Response resp) {
 				int floor = Integer.valueOf(req.queryParams("atFloor"));
 				Direction direction = Direction.valueOf(req.queryParams("to"));
-				elevator.call(floor, direction);
+				elevators[0].call(floor, direction);
 				resp.status(200);
 				return resp;
 			}
@@ -33,7 +39,8 @@ public class ElevatorEngine {
 		get(new Route("go") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				elevator.goTo(Integer.valueOf(req.queryParams("floorToGo")));
+				int cabin = Integer.valueOf(req.queryParams("cabin"));
+				elevators[cabin].goTo(Integer.valueOf(req.queryParams("floorToGo")));
 				resp.status(200);
 				return resp;
 			}
@@ -41,7 +48,8 @@ public class ElevatorEngine {
 		get(new Route("userHasEntered") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				elevator.userEntered();
+				int cabin = Integer.valueOf(req.queryParams("cabin"));
+				elevators[cabin].userEntered();
 				resp.status(200);
 				return resp;
 			}
@@ -49,7 +57,8 @@ public class ElevatorEngine {
 		get(new Route("userHasExited") {
 			@Override
 			public Object handle(Request req, Response resp) {
-				elevator.userExited();
+				int cabin = Integer.valueOf(req.queryParams("cabin"));
+				elevators[cabin].userExited();
 				resp.status(200);
 				return resp;
 			}
@@ -65,7 +74,11 @@ public class ElevatorEngine {
 				System.out.println("RESET : cause : "
 						+ req.queryParams("cause"));
 
-				elevator.reset(lower, higher, cabinSize);
+				elevators = new Elevator[cabinCount];
+				for (int cabin=0; cabin < cabinCount; cabin ++) {
+					elevators[cabin] = new Elevator();
+					elevators[cabin].reset(lower, higher, cabinSize);
+				}
 				resp.status(200);
 				return resp;
 			}
@@ -74,7 +87,11 @@ public class ElevatorEngine {
 			@Override
 			public Object handle(Request req, Response resp) {
 				resp.status(200);
-				return elevator.nextCommand();
+				String[] commands = new String[elevators.length];
+				for (int cabin=0; cabin < elevators.length; cabin ++) {
+					commands[cabin] = elevators[cabin].nextCommand().toString();
+				}
+				return StringUtils.join(commands, "\n");
 			}
 		});
 		get(new Route("status") {
@@ -83,7 +100,7 @@ public class ElevatorEngine {
 				resp.type("application/json");
 				try {
 					ObjectMapper mapper = new ObjectMapper();
-					return mapper.writeValueAsString(elevator.getStatus());
+					return mapper.writeValueAsString(elevators[0].getStatus());
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 					return "";
