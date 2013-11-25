@@ -60,7 +60,8 @@ public class ElevatorEngine {
 				int lower = Integer.valueOf(req.queryParams("lowerFloor"));
 				int higher = Integer.valueOf(req.queryParams("higherFloor"));
 				int cabinSize = Integer.valueOf(req.queryParams("cabinSize"));
-				
+				int cabinCount = Integer.valueOf(req.queryParams("cabinCount"));
+
 				System.out.println("RESET : cause : "
 						+ req.queryParams("cause"));
 
@@ -69,7 +70,7 @@ public class ElevatorEngine {
 				return resp;
 			}
 		});
-		get(new Route("nextCommand") {
+		get(new Route("nextCommands") {
 			@Override
 			public Object handle(Request req, Response resp) {
 				resp.status(200);

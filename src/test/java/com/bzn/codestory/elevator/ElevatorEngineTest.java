@@ -33,9 +33,9 @@ public class ElevatorEngineTest {
 	public void initServices_should_listen_on_specified_port()
 			throws ClientProtocolException, IOException {
 		String[] domains = { "go", "call", "reset", "userHasEntered",
-				"userHasExited", "nextCommand" };
+				"userHasExited", "nextCommands" };
 		String[] params = { "?floorToGo=1", "?atFloor=2&to=UP",
-				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours", "", "", "" };
+				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours&cabinCount=1", "", "", "" };
 		for (int i = 0; i < domains.length; i++) {
 			HttpGet get = new HttpGet("http://localhost:" + PORT + "/"
 					+ domains[i] + params[i]);
@@ -61,7 +61,7 @@ public class ElevatorEngineTest {
 	public void frequencies_should_be_displayed_after_reset_and_calls()
 			throws ClientProtocolException, IOException {
 		String[] domains = { "reset", "call", "call" };
-		String[] params = { "?lowerFloor=0&higherFloor=2&cabinSize=3&cause=toujours",
+		String[] params = { "?lowerFloor=0&higherFloor=2&cabinSize=3&cause=toujours&cabinCount=1",
 				"?atFloor=1&to=UP", "?atFloor=1&to=UP" };
 		for (int i = 0; i < domains.length; i++) {
 			HttpGet get = new HttpGet("http://localhost:" + PORT + "/"
