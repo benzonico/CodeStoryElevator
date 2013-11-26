@@ -9,9 +9,9 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldClose() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return !getElevator().getUsers().hasUsersCallingFrom(getElevator().currentFloor);
+			return !getElevator().hasUsersCallingFromCurrentFloor();
 		} else {
-			return !getElevator().getUsers().hasUsersCallingFrom(getElevator().currentFloor, getElevator().getCurrentDirection());
+			return !getElevator().hasUsersCallingFromCurrentFloorGoingInSameDirection();
 		}
 	}
 
@@ -20,24 +20,19 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 		if (shouldChangeDirection()) {
 			getElevator().setCurrentDirection(Direction.NIL);
 		}
-		return getElevator().getUsers().hasOrderTo(getElevator().currentFloor,
-				getElevator().getCurrentDirection())
-				|| (getElevator().getCurrentDirection().isNil() && getElevator()
-						.getUsers().hasOrderTo(getElevator().currentFloor));
+		return getElevator().hasUsersCallingFromCurrentFloorGoingInSameDirection() || getElevator().hasUsersGoingToCurrentFloor()
+				|| (getElevator().getCurrentDirection().isNil() && getElevator().hasUsersCallingFromCurrentFloor());
 	}
 
 	@Override
 	public boolean shouldChangeDirection() {
 		boolean shouldChange = false;
-		if (!getElevator().getUsers().hasUsersCallingFrom(getElevator().currentFloor,
-				getElevator().getCurrentDirection())) {
+		if (!getElevator().hasUsersCallingFromCurrentFloorGoingInSameDirection()) {
 			if (getElevator().getCurrentDirection().isUp()) {
-				shouldChange = getElevator().getUsers().countUsersAbove(
-						getElevator().currentFloor) == 0;
+				shouldChange = getElevator().countUsersAboveCurrentFloor() == 0;
 			}
 			if (getElevator().getCurrentDirection().isDown()) {
-				shouldChange = getElevator().getUsers().countUsersBelow(
-						getElevator().currentFloor) == 0;
+				shouldChange = getElevator().countUsersBelowCurrentFloor() == 0;
 			}
 		}
 		return shouldChange;
@@ -46,9 +41,7 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldGoUp() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return getElevator().getUsers().countUsersBelow(
-					getElevator().currentFloor) <= getElevator().getUsers()
-					.countUsersAbove(getElevator().currentFloor);
+			return getElevator().countUsersBelowCurrentFloor() <= getElevator().countUsersAboveCurrentFloor();
 		}
 		return getElevator().getCurrentDirection().isUp();
 	}

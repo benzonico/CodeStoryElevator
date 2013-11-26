@@ -162,8 +162,7 @@ public class Elevator {
 	}
 
 	public ElevatorStatus getStatus() {
-		return new ElevatorStatus(currentFloor, usersInCabin(), cabinSize,
-				open, currentDirection, users);
+		return new ElevatorStatus(currentFloor, usersInCabin(), cabinSize, open, currentDirection, users);
 	}
 
 	public int getCurrentTime() {
@@ -199,13 +198,11 @@ public class Elevator {
 	}
 
 	public int getPotentialScoreForFloor(int floor) {
-		List<User> usersToInspect = users.getUsersThatCanBeTakenInCabinAtFloor(
-				floor, getRemainingPlacesInCabin());
+		List<User> usersToInspect = users.getUsersThatCanBeTakenInCabinAtFloor(floor, getRemainingPlacesInCabin());
 		int floorPotentialScore = 0;
 		for (User user : usersToInspect) {
 			floorPotentialScore = floorPotentialScore
-					+ user.getPotentialMaxScore(currentFloor, currentDirection,
-							lower, higher, currentTime);
+					+ user.getPotentialMaxScore(currentFloor, currentDirection, lower, higher, currentTime);
 		}
 		return floorPotentialScore;
 	}
@@ -220,6 +217,26 @@ public class Elevator {
 
 	public int usersInCabin() {
 		return users.countUsersInCabin();
+	}
+
+	public boolean hasUsersCallingFromCurrentFloor() {
+		return users.hasUsersCallingFrom(currentFloor);
+	}
+
+	public boolean hasUsersCallingFromCurrentFloorGoingInSameDirection() {
+		return users.hasUsersCallingFrom(currentFloor, currentDirection);
+	}
+
+	public boolean hasUsersGoingToCurrentFloor() {
+		return users.hasUsersGoingTo(currentFloor);
+	}
+
+	public int countUsersAboveCurrentFloor() {
+		return users.countUsersAbove(currentFloor);
+	}
+
+	public int countUsersBelowCurrentFloor() {
+		return users.countUsersBelow(currentFloor);
 	}
 
 }
