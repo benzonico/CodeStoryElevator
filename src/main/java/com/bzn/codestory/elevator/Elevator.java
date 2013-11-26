@@ -119,7 +119,7 @@ public class Elevator {
 
 	private Command open() {
 		open = true;
-		return Command.OPEN;
+		return Command.open(currentDirection);
 	}
 
 	private Command idle() {

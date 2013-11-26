@@ -75,17 +75,26 @@ public class Users {
 	}
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
-		boolean hasOrderTo = false;
-		for (User user : usersCalling.get(currentFloor)) {
+		return hasUsersCallingFrom(currentFloor, dir)
+				|| hasUsersGoingTo(currentFloor, dir);
+	}
+
+	public boolean hasUsersGoingTo(int currentFloor, Direction dir) {
+		boolean hasOrderTo;
+		hasOrderTo = false;
+		for (User user : usersInCabin.get(currentFloor)) {
 			if (user.getCall().direction == dir) {
 				hasOrderTo = true;
 			}
 		}
-		if (!hasOrderTo) {
-			for (User user : usersInCabin.get(currentFloor)) {
-				if (user.getCall().direction == dir) {
-					hasOrderTo = true;
-				}
+		return hasOrderTo;
+	}
+
+	public boolean hasUsersCallingFrom(int currentFloor, Direction dir) {
+		boolean hasOrderTo = false;
+		for (User user : usersCalling.get(currentFloor)) {
+			if (user.getCall().direction == dir) {
+				hasOrderTo = true;
 			}
 		}
 		return hasOrderTo;

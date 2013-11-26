@@ -4,6 +4,8 @@ import static com.bzn.codestory.elevator.Command.CLOSE;
 import static com.bzn.codestory.elevator.Command.DOWN;
 import static com.bzn.codestory.elevator.Command.NOTHING;
 import static com.bzn.codestory.elevator.Command.OPEN;
+import static com.bzn.codestory.elevator.Command.OPEN_DOWN;
+import static com.bzn.codestory.elevator.Command.OPEN_UP;
 import static com.bzn.codestory.elevator.Command.UP;
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -58,7 +60,7 @@ public class ElevatorTest {
 	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls()
 			throws Exception {
 		elevator.call(1, Direction.UP);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(11);
 		checkNextCommands(CLOSE);
@@ -133,7 +135,7 @@ public class ElevatorTest {
 		elevator.userEntered();
 		elevator.goTo(2);
 		assertThat(elevator.usersInCabin()).isEqualTo(2);
-		checkNextCommands(CLOSE, UP, OPEN);
+		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(1);
 		checkNextCommands(CLOSE, UP, OPEN);
@@ -150,10 +152,10 @@ public class ElevatorTest {
 		checkNextCommands(OPEN);
 		elevator.userEntered();
 		elevator.goTo(2);
-		checkNextCommands(CLOSE, UP, OPEN);
+		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(3);
-		checkNextCommands(CLOSE, UP, OPEN);
+		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
 		checkNextCommands(CLOSE, UP, OPEN);
 		elevator.userExited();
@@ -170,7 +172,7 @@ public class ElevatorTest {
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, UP, UP, OPEN);
 		elevator.userExited();
-		checkNextCommands(CLOSE, DOWN, OPEN);
+		checkNextCommands(CLOSE, DOWN, OPEN_DOWN);
 		elevator.userEntered();
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
@@ -183,12 +185,12 @@ public class ElevatorTest {
 			throws Exception {
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.DOWN);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, UP, OPEN);
 		elevator.userExited();
-		checkNextCommands(CLOSE, DOWN, OPEN);
+		checkNextCommands(CLOSE, DOWN, OPEN_DOWN);
 		elevator.userEntered();
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
@@ -209,12 +211,12 @@ public class ElevatorTest {
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.UP);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(2);
 		elevator.userEntered();
 		elevator.goTo(3);
-		checkNextCommands(CLOSE, UP, OPEN);
+		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
 		elevator.userEntered();
 		elevator.goTo(3);
@@ -227,7 +229,7 @@ public class ElevatorTest {
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.UP);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.userEntered();
 		elevator.goTo(3);
@@ -239,20 +241,22 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_change_direction_when_cabin_full_and_no_GoTo_above()
+	public void should_skip_users_going_the_other_way()
 			throws Exception {
 		elevator.reset(0, 3, 2);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.DOWN);
 		elevator.call(2, Direction.DOWN);
 		elevator.call(3, Direction.DOWN);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(2);
-		elevator.call(0, Direction.UP);
-		elevator.call(0, Direction.UP);
-		checkNextCommands(CLOSE, UP, OPEN);
+		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
+		checkNextCommands(CLOSE, UP, OPEN);
+		elevator.userEntered();
+		elevator.goTo(0);
+		checkNextCommands(CLOSE, DOWN, OPEN_DOWN);
 		elevator.userEntered();
 		elevator.userEntered();
 		elevator.goTo(0);
@@ -264,11 +268,27 @@ public class ElevatorTest {
 	public void should_not_close_doors_in_the_nose_of_users() {
 		elevator.reset(0, 3, 5);
 		elevator.call(1, Direction.UP);
+		checkNextCommands(UP, OPEN_UP);
+		elevator.userEntered();
+		elevator.goTo(2);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(NOTHING);
+		elevator.userEntered();
+		elevator.goTo(2);
+		checkNextCommands(CLOSE);
+	}
+
+	@Test
+	public void should_change_direction_without_forgetting_users_at_floor() {
+		elevator.reset(0, 3, 5);
+		elevator.call(1, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
 		elevator.userEntered();
+		elevator.goTo(0);
 		elevator.call(1, Direction.DOWN);
 		checkNextCommands(NOTHING);
 		elevator.userEntered();
+		elevator.goTo(0);
 		checkNextCommands(CLOSE);
 	}
 
@@ -277,7 +297,7 @@ public class ElevatorTest {
 		elevator.reset(0, 3, 2);
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.userEntered();
 		elevator.call(1, Direction.UP);
@@ -290,7 +310,7 @@ public class ElevatorTest {
 		makeSeveralCalls(1, Direction.UP, 2);
 		makeSeveralCalls(2, Direction.UP, 3);
 		makeSeveralCalls(3, Direction.DOWN, 10);
-		checkNextCommands(UP, OPEN);
+		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(3);
 		elevator.userEntered();
@@ -305,7 +325,7 @@ public class ElevatorTest {
 		checkNextCommands(UP, UP, UP, UP);
 		elevator.call(1, Direction.DOWN);
 		elevator.call(2, Direction.UP);
-		checkNextCommands(OPEN);
+		checkNextCommands(OPEN_UP);
 		elevator.userEntered();
 		elevator.goTo(5);
 		checkNextCommands(CLOSE, UP);
