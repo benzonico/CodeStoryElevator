@@ -8,6 +8,7 @@ import static com.bzn.codestory.elevator.Command.UP;
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ElevatorTest {
@@ -298,6 +299,20 @@ public class ElevatorTest {
 	}
 
 	@Test
+	public void should_not_take_user_to_bottom_if_he_wants_to_go_up() {
+		elevator.reset(0, 5, 10);
+		elevator.call(4, Direction.UP);
+		checkNextCommands(UP, UP, UP, UP);
+		elevator.call(1, Direction.DOWN);
+		elevator.call(2, Direction.UP);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		elevator.goTo(5);
+		checkNextCommands(CLOSE, UP);
+	}
+
+	@Test
+	@Ignore("vip mode is not activated")
 	public void should_stop_only_to_pick_vips_or_to_drop_people_in_vip_mode() {
 		elevator.reset(0, 40, 6);
 		makeSeveralCalls(1, Direction.UP, 4);
@@ -321,6 +336,7 @@ public class ElevatorTest {
 	}
 	
 	@Test
+	@Ignore("vip mode is not activated")
 	public void one_no_vip_calling_at_36_and_one_vip_calling_at_33_should_change_direction()
 			throws Exception {
 		elevator.reset(0, 37, 3);

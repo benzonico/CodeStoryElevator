@@ -25,14 +25,17 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 
 	@Override
 	public boolean shouldChangeDirection() {
-		boolean shouldChange = true;
-		if (getElevator().getCurrentDirection().isUp()) {
-			shouldChange = getElevator().getUsers().countUsersAbove(
-					getElevator().currentFloor) == 0;
-		}
-		if (getElevator().getCurrentDirection().isDown()) {
-			shouldChange = getElevator().getUsers().countUsersBelow(
-					getElevator().currentFloor) == 0;
+		boolean shouldChange = false;
+		if (!getElevator().getUsers().hasOrderTo(getElevator().currentFloor,
+				getElevator().getCurrentDirection())) {
+			if (getElevator().getCurrentDirection().isUp()) {
+				shouldChange = getElevator().getUsers().countUsersAbove(
+						getElevator().currentFloor) == 0;
+			}
+			if (getElevator().getCurrentDirection().isDown()) {
+				shouldChange = getElevator().getUsers().countUsersBelow(
+						getElevator().currentFloor) == 0;
+			}
 		}
 		return shouldChange;
 	}

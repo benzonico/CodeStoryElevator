@@ -87,8 +87,6 @@ public class Elevator {
 	private ElevatorAlgorithm chooseAlgorithm() {
 		if (isCabinFull()) {
 			return crowdedElevatorAlgorithm;
-		} else if (rushInCabin()) {
-			return vipElevatorAlgorithm;
 		} else {
 			return oneDirectionElevatorAlgorithm;
 		}
@@ -165,8 +163,7 @@ public class Elevator {
 
 	public ElevatorStatus getStatus() {
 		return new ElevatorStatus(currentFloor, usersInCabin(), cabinSize,
-				open,
-				currentDirection, users);
+				open, currentDirection, users);
 	}
 
 	public int getCurrentTime() {
