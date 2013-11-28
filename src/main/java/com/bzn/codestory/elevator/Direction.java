@@ -15,3 +15,4 @@ public enum Direction{
 		return this == NIL;
 	}
 }
+
