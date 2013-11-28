@@ -304,7 +304,7 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_detect_cabin_full_in_vip_mode() {
+	public void should_detect_not_stop_to_take_users_if_cabin_full() {
 		elevator.reset(0, 3, 2);
 		makeSeveralCalls(1, Direction.UP, 2);
 		makeSeveralCalls(2, Direction.UP, 3);
@@ -325,6 +325,24 @@ public class ElevatorTest {
 		elevator.call(1, Direction.DOWN);
 		elevator.call(2, Direction.UP);
 		checkNextCommands(OPEN_UP);
+		elevator.userEntered();
+		elevator.goTo(5);
+		checkNextCommands(CLOSE, UP);
+	}
+
+	@Test
+	public void elevator_should_not_stay_at_one_floor_forever() {
+		elevator.reset(0, 5, 10);
+		elevator.call(0, Direction.UP);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		elevator.goTo(4);
+		elevator.call(3, Direction.UP);
+		elevator.call(3, Direction.DOWN);
+		elevator.call(3, Direction.UP);
+		checkNextCommands(CLOSE, UP, UP, UP, OPEN_UP);
+		elevator.userEntered();
+		elevator.goTo(5);
 		elevator.userEntered();
 		elevator.goTo(5);
 		checkNextCommands(CLOSE, UP);

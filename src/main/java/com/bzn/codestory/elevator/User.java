@@ -1,11 +1,11 @@
 package com.bzn.codestory.elevator;
 
-public class User {
+public class User implements Comparable<User> {
 
 	private Call call;
 	private GoTo goTo;
-	private int timeArrivedInBuilding;
-	private int timeEnteredCabin;
+	private Integer timeArrivedInBuilding;
+	private Integer timeEnteredCabin;
 
 	private final static int waitWeight = 1;
 	private final static int travelWeight = 1;
@@ -47,6 +47,21 @@ public class User {
 
 	public int getWaitingTime(int currentTime) {
 		return currentTime - timeArrivedInBuilding;
+	}
+
+	@Override
+	public int compareTo(User other) {
+		int comparison = timeArrivedInBuilding.compareTo(other.timeArrivedInBuilding);
+		if (comparison == 0) {
+			comparison = call.compareTo(other.call);
+			if (comparison == 0 && timeEnteredCabin != null) {
+				comparison = timeEnteredCabin.compareTo(other.timeEnteredCabin);
+				if (comparison == 0 && goTo != null) {
+					comparison = goTo.compareTo(other.goTo);
+				}
+			}
+		}
+		return comparison;
 	}
 
 }
