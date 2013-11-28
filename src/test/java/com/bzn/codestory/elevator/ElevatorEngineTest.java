@@ -35,7 +35,7 @@ public class ElevatorEngineTest {
 		String[] domains = { "reset", "call", "userHasEntered", "go",
 				"userHasExited", "nextCommands" };
 		String[] params = {
-				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours&cabinCount=1",
+				"?lowerFloor=0&higherFloor=12&cabinSize=5&cause=toujours&cabinCount=2",
 				"?atFloor=0&to=UP", "?cabin=0", "?cabin=0&floorToGo=1",
 				"?cabin=0", "" };
 		for (int i = 0; i < domains.length; i++) {
