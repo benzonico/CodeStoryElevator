@@ -3,7 +3,11 @@ package com.bzn.codestory.elevator;
 import static spark.Spark.get;
 import static spark.Spark.setPort;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import spark.Request;
 import spark.Response;
@@ -15,6 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ElevatorEngine {
 
 	private static Elevator[] elevators = new Elevator[1];
+	private static Logger logger = LoggerFactory.getLogger(ElevatorEngine.class);
+
 	static {
 		elevators[0] = new Elevator();
 	}
@@ -71,7 +77,7 @@ public class ElevatorEngine {
 				int cabinSize = Integer.valueOf(req.queryParams("cabinSize"));
 				int cabinCount = Integer.valueOf(req.queryParams("cabinCount"));
 
-				System.out.println("RESET : cause : "
+				logger.info("RESET : cause : "
 						+ req.queryParams("cause"));
 
 				elevators = new Elevator[cabinCount];
@@ -91,7 +97,9 @@ public class ElevatorEngine {
 				for (int cabin=0; cabin < elevators.length; cabin ++) {
 					commands[cabin] = elevators[cabin].nextCommand().toString();
 				}
-				return StringUtils.join(commands, "\n");
+				String returnedCommands = StringUtils.join(commands, "\n");
+				logger.info("nextCommands : " + Arrays.toString(commands));
+				return returnedCommands;
 			}
 		});
 		get(new Route("status") {
