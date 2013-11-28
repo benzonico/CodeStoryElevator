@@ -3,22 +3,20 @@ package com.bzn.codestory.elevator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.SortedMap;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 
 public class Users {
-	private SortedMap<Integer, Queue<User>> usersCalling;
+	private SortedMap<Integer, List<User>> usersCalling;
 	private SortedMap<Integer, List<User>> usersInCabin;
 
 	public Users(int lower, int higher) {
 		usersCalling = Maps.newTreeMap();
 		usersInCabin = Maps.newTreeMap();
 		for (int floor = lower; floor < higher + 1; floor++) {
-			usersCalling.put(floor, Queues.<User> newArrayDeque());
+			usersCalling.put(floor, Lists.<User> newArrayList());
 			usersInCabin.put(floor, Lists.<User> newArrayList());
 		}
 	}
@@ -68,10 +66,23 @@ public class Users {
 		usersInCabin.get(order.floor).add(lastUserInCabin);
 	}
 
-	public void enter(int currentFloor, int timeEntered) {
-		User userEntering = usersCalling.get(currentFloor).poll();
-		userEntering.enterCabin(timeEntered);
-		usersInCabin.get(currentFloor).add(userEntering);
+	public void enter(int currentFloor, Direction currentDirection, int timeEntered) {
+		boolean userFound = false;
+		User userEntering = null;
+		List<User> userAtFloor = usersCalling.get(currentFloor);
+		Iterator<User> iterator = userAtFloor.iterator();
+		while(!userFound && iterator.hasNext()){
+			User userInspected = iterator.next();
+			userFound = currentDirection == Direction.NIL || currentDirection == userInspected.getCall().getDirection();
+			if (userFound) {
+				userEntering = userInspected;
+				iterator.remove();
+			}
+		}
+		if (userEntering != null) {
+			userEntering.enterCabin(timeEntered);
+			usersInCabin.get(currentFloor).add(userEntering);
+		}
 	}
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
@@ -160,7 +171,7 @@ public class Users {
 		return countUsersInCabin;
 	}
 
-	public SortedMap<Integer, Queue<User>> getUsersCalling() {
+	public SortedMap<Integer, List<User>> getUsersCalling() {
 		return usersCalling;
 	}
 

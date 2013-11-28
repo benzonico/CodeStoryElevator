@@ -305,7 +305,7 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_detect_cabin_full_in_vip_mode() {
+	public void should_detect_not_stop_to_take_users_if_cabin_full() {
 		elevator.reset(0, 3, 2);
 		makeSeveralCalls(1, Direction.UP, 2);
 		makeSeveralCalls(2, Direction.UP, 3);
@@ -332,6 +332,24 @@ public class ElevatorTest {
 	}
 
 	@Test
+	public void elevator_should_not_stay_at_one_floor_forever() {
+		elevator.reset(0, 5, 10);
+		elevator.call(0, Direction.UP);
+		checkNextCommands(OPEN);
+		elevator.userEntered();
+		elevator.goTo(4);
+		elevator.call(3, Direction.UP);
+		elevator.call(3, Direction.DOWN);
+		elevator.call(3, Direction.UP);
+		checkNextCommands(CLOSE, UP, UP, UP, OPEN_UP);
+		elevator.userEntered();
+		elevator.goTo(5);
+		elevator.userEntered();
+		elevator.goTo(5);
+		checkNextCommands(CLOSE, UP);
+	}
+
+	@Test
 	@Ignore("vip mode is not activated")
 	public void should_stop_only_to_pick_vips_or_to_drop_people_in_vip_mode() {
 		elevator.reset(0, 40, 6);
@@ -348,7 +366,7 @@ public class ElevatorTest {
 		elevator.goTo(36);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 35);
-		checkNextCommands(OPEN);/* étage 36 */
+		checkNextCommands(OPEN);/* Ã©tage 36 */
 		elevator.userExited();
 		elevator.userExited();
 		elevator.userExited();
@@ -371,7 +389,7 @@ public class ElevatorTest {
 		elevator.goTo(34);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 33);
-		checkNextCommands(OPEN);/* étage 34 */
+		checkNextCommands(OPEN);/* Ã©tage 34 */
 		elevator.call(33, Direction.DOWN);
 		elevator.call(33, Direction.DOWN);
 		elevator.userExited();
@@ -380,7 +398,7 @@ public class ElevatorTest {
 		elevator.goTo(1);
 		elevator.userEntered();
 		elevator.goTo(1);/* on repasse en rush mode... */
-		checkNextCommands(CLOSE, DOWN, OPEN); /* étage 33 */
+		checkNextCommands(CLOSE, DOWN, OPEN); /* Ã©tage 33 */
 	}
 
 

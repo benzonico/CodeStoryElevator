@@ -1,6 +1,6 @@
 package com.bzn.codestory.elevator;
 
-public enum Direction {
+public enum Direction{
 	UP, DOWN, NIL; // Lisp Hommage
 
 	public boolean isUp() {

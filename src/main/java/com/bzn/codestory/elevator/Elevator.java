@@ -154,7 +154,7 @@ public class Elevator {
 	}
 
 	public void userEntered() {
-		users.enter(currentFloor, currentTime);
+		users.enter(currentFloor, currentDirection, currentTime);
 	}
 
 	public void userExited() {

@@ -3,9 +3,9 @@ package com.bzn.codestory.elevator;
 public abstract class Order {
 
 	protected Direction direction;
-	protected int floor;
+	protected Integer floor;
 
-	protected Order(int floor, Direction direction) {
+	protected Order(Integer floor, Direction direction) {
 		this.floor = floor;
 		this.direction = direction;
 	}
