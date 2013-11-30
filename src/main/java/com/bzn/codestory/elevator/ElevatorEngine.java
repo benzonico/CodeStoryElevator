@@ -19,7 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ElevatorEngine {
 
 	private static Elevator[] elevators = new Elevator[1];
-	private static Logger logger = LoggerFactory.getLogger(ElevatorEngine.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(ElevatorEngine.class);
 
 	static {
 		elevators[0] = new Elevator();
@@ -37,7 +38,9 @@ public class ElevatorEngine {
 			public Object handle(Request req, Response resp) {
 				int floor = Integer.valueOf(req.queryParams("atFloor"));
 				Direction direction = Direction.valueOf(req.queryParams("to"));
-				elevators[0].call(floor, direction);
+				Elevator picked = new RouteCall().route(elevators, floor,
+						direction);
+				picked.call(floor, direction);
 				resp.status(200);
 				return resp;
 			}
@@ -46,7 +49,8 @@ public class ElevatorEngine {
 			@Override
 			public Object handle(Request req, Response resp) {
 				int cabin = Integer.valueOf(req.queryParams("cabin"));
-				elevators[cabin].goTo(Integer.valueOf(req.queryParams("floorToGo")));
+				elevators[cabin].goTo(Integer.valueOf(req
+						.queryParams("floorToGo")));
 				resp.status(200);
 				return resp;
 			}
@@ -77,11 +81,10 @@ public class ElevatorEngine {
 				int cabinSize = Integer.valueOf(req.queryParams("cabinSize"));
 				int cabinCount = Integer.valueOf(req.queryParams("cabinCount"));
 
-				logger.info("RESET : cause : "
-						+ req.queryParams("cause"));
+				logger.info("RESET : cause : " + req.queryParams("cause"));
 
 				elevators = new Elevator[cabinCount];
-				for (int cabin=0; cabin < cabinCount; cabin ++) {
+				for (int cabin = 0; cabin < cabinCount; cabin++) {
 					elevators[cabin] = new Elevator();
 					elevators[cabin].reset(lower, higher, cabinSize);
 				}
@@ -94,7 +97,7 @@ public class ElevatorEngine {
 			public Object handle(Request req, Response resp) {
 				resp.status(200);
 				String[] commands = new String[elevators.length];
-				for (int cabin=0; cabin < elevators.length; cabin ++) {
+				for (int cabin = 0; cabin < elevators.length; cabin++) {
 					commands[cabin] = elevators[cabin].nextCommand().toString();
 				}
 				String returnedCommands = StringUtils.join(commands, "\n");
@@ -116,5 +119,4 @@ public class ElevatorEngine {
 			}
 		});
 	}
-
 }
