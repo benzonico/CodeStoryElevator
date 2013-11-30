@@ -241,8 +241,7 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_skip_users_going_the_other_way()
-			throws Exception {
+	public void should_skip_users_going_the_other_way() throws Exception {
 		elevator.reset(0, 3, 2);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.DOWN);
@@ -348,13 +347,13 @@ public class ElevatorTest {
 		elevator.goTo(36);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 35);
-		checkNextCommands(OPEN);/* étage 36 */
+		checkNextCommands(OPEN);/* Ã©tage 36 */
 		elevator.userExited();
 		elevator.userExited();
 		elevator.userExited();
 		elevator.userExited();
 	}
-	
+
 	@Test
 	@Ignore("vip mode is not activated")
 	public void one_no_vip_calling_at_36_and_one_vip_calling_at_33_should_change_direction()
@@ -371,7 +370,7 @@ public class ElevatorTest {
 		elevator.goTo(34);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 33);
-		checkNextCommands(OPEN);/* étage 34 */
+		checkNextCommands(OPEN);/* Ã©tage 34 */
 		elevator.call(33, Direction.DOWN);
 		elevator.call(33, Direction.DOWN);
 		elevator.userExited();
@@ -380,9 +379,8 @@ public class ElevatorTest {
 		elevator.goTo(1);
 		elevator.userEntered();
 		elevator.goTo(1);/* on repasse en rush mode... */
-		checkNextCommands(CLOSE, DOWN, OPEN); /* étage 33 */
+		checkNextCommands(CLOSE, DOWN, OPEN); /* Ã©tage 33 */
 	}
-
 
 	private void checkNextCommandSomeTimes(Command command, int times) {
 		for (int i = 0; i < times; i++) {
