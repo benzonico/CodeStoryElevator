@@ -14,7 +14,7 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldClose() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return !getElevator().hasUsersCallingFromCurrentFloor();
+			return true;
 		} else {
 			return !getElevator().hasUsersCallingFromCurrentFloorGoingInSameDirection();
 		}
@@ -52,7 +52,13 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldGoUp() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return getElevator().countUsersBelowCurrentFloor() <= getElevator().countUsersAboveCurrentFloor();
+			int usersGoingAbove = getElevator().countUsersGoingAbove();
+			int usersGoingBelow = getElevator().countUsersGoingBelow();
+			if (usersGoingBelow == usersGoingAbove) {
+				return getElevator().countUsersBelowCurrentFloor() <= getElevator().countUsersAboveCurrentFloor();
+			} else {
+				return usersGoingBelow < usersGoingAbove;
+			}
 		}
 		return getElevator().getCurrentDirection().isUp();
 	}

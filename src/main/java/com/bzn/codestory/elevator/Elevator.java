@@ -239,4 +239,12 @@ public class Elevator {
 		return users.countUsersBelow(currentFloor);
 	}
 
+	public int countUsersGoingAbove() {
+		return users.countGoToAbove(currentFloor);
+	}
+
+	public int countUsersGoingBelow() {
+		return users.countGoToBelow(currentFloor);
+	}
+
 }
