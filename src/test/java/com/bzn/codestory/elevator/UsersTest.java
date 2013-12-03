@@ -7,7 +7,7 @@ import org.junit.Test;
 public class UsersTest {
 
 	@Test
-	public void test() {
+	public void test_call_enter_goTo_behaviour() {
 		int floor_0 = 0;
 		Users users = new Users(0, 5);
 		Call call = new Call(floor_0, Direction.UP);

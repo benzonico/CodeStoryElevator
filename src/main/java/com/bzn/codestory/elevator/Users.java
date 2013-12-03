@@ -60,8 +60,7 @@ public class Users {
 
 	public void userWantsToGoTo(GoTo order, int currentFloor) {
 		List<User> usersToFloor = usersInCabin.get(currentFloor);
-		User lastUserInCabin = usersToFloor.get(usersToFloor.size() - 1);
-		usersToFloor.remove(lastUserInCabin);
+		User lastUserInCabin = usersToFloor.remove(usersToFloor.size() - 1);
 		lastUserInCabin.goTo(order);
 		usersInCabin.get(order.floor).add(lastUserInCabin);
 	}

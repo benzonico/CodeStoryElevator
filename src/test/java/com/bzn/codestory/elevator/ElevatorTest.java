@@ -286,7 +286,7 @@ public class ElevatorTest {
 		elevator.userEntered();
 		elevator.goTo(0);
 		elevator.call(1, Direction.DOWN);
-		checkNextCommands(CLOSE);
+		checkNextCommands(NOTHING);
 	}
 
 	@Test

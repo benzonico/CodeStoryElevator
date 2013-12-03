@@ -14,7 +14,7 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldClose() {
 		if (getElevator().getCurrentDirection().isNil()) {
-			return true;
+			return !getElevator().hasUsersCallingFromCurrentFloor();
 		} else {
 			return !getElevator().hasUsersCallingFromCurrentFloorGoingInSameDirection();
 		}
