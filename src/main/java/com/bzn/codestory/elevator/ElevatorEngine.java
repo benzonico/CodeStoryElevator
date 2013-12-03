@@ -18,10 +18,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElevatorEngine {
 
-	private static Building building = new Building();
-	private static Logger logger = LoggerFactory.getLogger(ElevatorEngine.class);
+	private static Building building = null;
+
+	private static final Logger logger = LoggerFactory.getLogger(ElevatorEngine.class);
 
 	public static void main(String[] args) {
+		building = new Building();
 		ElevatorEngine.initServices(Integer.parseInt(System
 				.getProperty("app.port")));
 	}
@@ -98,7 +100,7 @@ public class ElevatorEngine {
 					ObjectMapper mapper = new ObjectMapper();
 					return mapper.writeValueAsString(building.elevators[0].getStatus());
 				} catch (JsonProcessingException e) {
-					e.printStackTrace();
+					logger.error("While processing status", e);
 					return "";
 				}
 			}
