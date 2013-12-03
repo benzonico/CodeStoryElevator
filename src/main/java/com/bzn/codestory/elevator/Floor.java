@@ -34,6 +34,7 @@ public class Floor {
 	public int getCabinTakingFloorDown() {
 		return cabinTakingFloorDown;
 	}
+	
 	public List<User> getUsers() {
 		return users;
 	}
@@ -42,3 +43,4 @@ public class Floor {
 		users.add(newUser);
 	}
 }
+
