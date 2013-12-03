@@ -78,7 +78,7 @@ public class ElevatorEngine {
 				logger.info("RESET : cause : "
 						+ req.queryParams("cause"));
 
-				building = new Building(lower, higher, cabinSize, cabinCount);
+				building = new Building(lower, higher, cabinCount, cabinSize);
 				resp.status(200);
 				return resp;
 			}
