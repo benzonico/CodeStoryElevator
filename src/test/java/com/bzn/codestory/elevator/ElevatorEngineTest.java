@@ -85,7 +85,7 @@ public class ElevatorEngineTest {
 				.isEqualTo(ContentType.APPLICATION_JSON.getMimeType());
 		assertThat(statusJson).isNotNull().startsWith("{")
 				.contains(
-						"\"usersCalling\":{\"0\":[],\"1\":[{\"call\":{\"direction\":\"UP\",\"floor\":1}},{\"call\":{\"direction\":\"DOWN\",\"floor\":1}}]")
+						"\"usersCalling\":{\"0\":[],\"1\":[{\"call\":{\"direction\":\"UP\",\"floor\":1},\"goTo\":null}")
 				.endsWith("}");
 	}
 }
