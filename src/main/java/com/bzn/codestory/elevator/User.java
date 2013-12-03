@@ -26,6 +26,10 @@ public class User implements Comparable<User> {
 	public Call getCall() {
 		return call;
 	}
+	
+	public GoTo getGoTo() {
+		return goTo;
+	}
 
 	public int getPotentialMaxScore(int currentFloor,
 			Direction currentDirection, int lower, int higher, int currentTime) {
