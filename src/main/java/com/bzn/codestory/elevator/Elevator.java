@@ -25,7 +25,6 @@ public class Elevator {
 
 	private CrowdedElevatorAlgorithm crowdedElevatorAlgorithm;
 	private OneDirectionElevatorAlgorithm oneDirectionElevatorAlgorithm;
-	private VipElevatorAlgorithm vipElevatorAlgorithm;
 
 	private int currentTime;
 
@@ -39,7 +38,6 @@ public class Elevator {
 		currentFloor = startFloor;
 		crowdedElevatorAlgorithm = new CrowdedElevatorAlgorithm(this);
 		oneDirectionElevatorAlgorithm = new OneDirectionElevatorAlgorithm(this);
-		vipElevatorAlgorithm = new VipElevatorAlgorithm(this);
 	}
 
 	public void reset(int lower, int higher, int cabinSize) {
@@ -90,10 +88,6 @@ public class Elevator {
 		} else {
 			return oneDirectionElevatorAlgorithm;
 		}
-	}
-
-	private boolean rushInCabin() {
-		return users.countUsersInCabin() > cabinSize / 3;
 	}
 
 	private boolean isCabinFull() {

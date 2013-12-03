@@ -11,13 +11,9 @@ public class Building {
 	
 	public Elevator[] elevators;
 	private Map<Integer, Floor> floors;
-	private int lower;
-	private int higher;
 	private int cabinCount;
 	
 	public Building(int lower, int higher, int cabinCount, int cabinSize){
-		this.lower = lower;
-		this.higher = higher;
 		this.cabinCount = cabinCount;
 		floors = Maps.<Integer, Floor> newHashMap();
 		for (int i = lower; i <= higher; i++) {
@@ -31,7 +27,7 @@ public class Building {
 	}
 	
 	public Building(){
-		new Building(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_COUNT, DEFAULT_CABIN_SIZE);
+		this(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_COUNT, DEFAULT_CABIN_SIZE);
 	}
 	
 	public void receiveCall(int floor, Direction direction){
