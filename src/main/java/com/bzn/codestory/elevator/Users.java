@@ -65,23 +65,9 @@ public class Users {
 		usersInCabin.get(order.floor).add(lastUserInCabin);
 	}
 
-	public void enter(int currentFloor, Direction currentDirection, int timeEntered) {
-		boolean userFound = false;
-		User userEntering = null;
-		List<User> userAtFloor = usersCalling.get(currentFloor);
-		Iterator<User> iterator = userAtFloor.iterator();
-		while(!userFound && iterator.hasNext()){
-			User userInspected = iterator.next();
-			userFound = currentDirection == Direction.NIL || currentDirection == userInspected.getCall().getDirection();
-			if (userFound) {
-				userEntering = userInspected;
-				iterator.remove();
-			}
-		}
-		if (userEntering != null) {
-			userEntering.enterCabin(timeEntered);
-			usersInCabin.get(currentFloor).add(userEntering);
-		}
+	public void enter(User userEntering, int currentFloor, int timeEntered) {
+		userEntering.enterCabin(timeEntered);
+		usersInCabin.get(currentFloor).add(userEntering);
 	}
 
 	public boolean hasOrderTo(int currentFloor, Direction dir) {
@@ -111,7 +97,8 @@ public class Users {
 	}
 
 	public boolean hasOrderTo(int currentFloor) {
-		return hasUsersCallingFrom(currentFloor) || hasUsersGoingTo(currentFloor);
+		return hasUsersCallingFrom(currentFloor)
+				|| hasUsersGoingTo(currentFloor);
 	}
 
 	public boolean hasUsersGoingTo(int currentFloor) {
@@ -178,4 +165,18 @@ public class Users {
 		return usersInCabin;
 	}
 
+	public void emptyCallsForFloorAndDirection(int currentFloor,
+			Direction currentDirection) {
+		if(Direction.NIL == currentDirection){
+			usersCalling.get(currentFloor).clear();
+		}else{
+			Iterator<User> iterator = usersCalling.get(currentFloor).iterator();
+			while (iterator.hasNext()) {
+				User user = iterator.next();
+				if(Direction.NIL == currentDirection || currentDirection == user.getCall().getDirection()){
+					iterator.remove();
+				}
+			}
+		}
+	}
 }

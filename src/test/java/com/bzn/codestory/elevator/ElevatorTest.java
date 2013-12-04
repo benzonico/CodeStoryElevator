@@ -9,6 +9,8 @@ import static com.bzn.codestory.elevator.Command.OPEN_UP;
 import static com.bzn.codestory.elevator.Command.UP;
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,9 +39,11 @@ public class ElevatorTest {
 
 	@Test
 	public void should_close_doors_if_opened() throws Exception {
-		elevator.call(0, Direction.UP);
+		int floor_0 = 0;
+		elevator.call(floor_0, Direction.UP);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		User lastUserAtFloor = getDummyUserCallingFrom(floor_0, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		checkNextCommands(CLOSE);
 	}
 
@@ -61,7 +65,9 @@ public class ElevatorTest {
 			throws Exception {
 		elevator.call(1, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
+		int floor_1 = 1;
+		User lastUserAtFloor = getDummyUserCallingFrom(floor_1, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		elevator.goTo(11);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 10);
@@ -74,7 +80,9 @@ public class ElevatorTest {
 	public void oneUser_calling_at_0_and_going_to_1() throws Exception {
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		int floor_0 = 0;
+		User lastUserAtFloor = getDummyUserCallingFrom(floor_0, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		assertThat(elevator.usersInCabin()).isEqualTo(1);
 		elevator.goTo(1);
 		checkNextCommands(CLOSE, UP, OPEN);
@@ -88,7 +96,9 @@ public class ElevatorTest {
 	public void oneUser_calling_at_0_and_going_to_2() throws Exception {
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		int floor_0 = 0;
+		User lastUserAtFloor = getDummyUserCallingFrom(floor_0, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		assertThat(elevator.usersInCabin()).isEqualTo(1);
 		elevator.goTo(2);
 		checkNextCommands(CLOSE, UP, UP, OPEN);
@@ -101,7 +111,9 @@ public class ElevatorTest {
 	public void oneUser_calling_at_1_and_going_to_0() throws Exception {
 		elevator.call(1, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
-		elevator.userEntered();
+		int floor_1 = 1;
+		User lastUserAtFloor = getDummyUserCallingFrom(floor_1, Direction.DOWN);
+		elevator.userEntered(lastUserAtFloor);
 		assertThat(elevator.usersInCabin()).isEqualTo(1);
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, OPEN);
@@ -110,13 +122,20 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE);
 	}
 
+	private User getDummyUserCallingFrom(int floor, Direction direction) {
+		Call call = new Call(floor, direction);
+		return new User(call, 0);
+	}
+
 	@Test
 	public void oneUser_calling_at_2_with_elevator_at_three_and_going_to_five()
 			throws Exception {
 		elevator = new Elevator(3);
 		elevator.call(2, Direction.UP);
 		checkNextCommands(DOWN, OPEN);
-		elevator.userEntered();
+		int floor_2 = 2;
+		User lastUserAtFloor = getDummyUserCallingFrom(floor_2, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		assertThat(elevator.usersInCabin()).isEqualTo(1);
 		elevator.goTo(5);
 		checkNextCommands(CLOSE, UP, UP, UP, OPEN);
@@ -130,9 +149,11 @@ public class ElevatorTest {
 		elevator.call(0, Direction.UP);
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		User lastUserAtFloor = getDummyUserCallingFrom(0, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		elevator.goTo(1);
-		elevator.userEntered();
+		lastUserAtFloor = getDummyUserCallingFrom(0, Direction.UP);
+		elevator.userEntered(lastUserAtFloor);
 		elevator.goTo(2);
 		assertThat(elevator.usersInCabin()).isEqualTo(2);
 		checkNextCommands(CLOSE, UP, OPEN_UP);
@@ -150,10 +171,10 @@ public class ElevatorTest {
 		elevator.call(0, Direction.UP);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(0, Direction.UP));
 		elevator.goTo(2);
 		checkNextCommands(CLOSE, UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
@@ -168,12 +189,12 @@ public class ElevatorTest {
 		elevator.call(0, Direction.UP);
 		elevator.call(2, Direction.DOWN);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(0, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, UP, UP, OPEN);
 		elevator.userExited();
 		checkNextCommands(CLOSE, DOWN, OPEN_DOWN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(2, Direction.DOWN));
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
 		elevator.userExited();
@@ -186,12 +207,12 @@ public class ElevatorTest {
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.DOWN);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, UP, OPEN);
 		elevator.userExited();
 		checkNextCommands(CLOSE, DOWN, OPEN_DOWN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(2, Direction.DOWN));
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
 		elevator.userExited();
@@ -212,13 +233,13 @@ public class ElevatorTest {
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(2);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(2, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, OPEN);
 	}
@@ -230,9 +251,9 @@ public class ElevatorTest {
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, UP, OPEN);
 		elevator.userExited();
@@ -248,16 +269,16 @@ public class ElevatorTest {
 		elevator.call(2, Direction.DOWN);
 		elevator.call(3, Direction.DOWN);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(2);
 		checkNextCommands(CLOSE, UP, OPEN_UP);
 		elevator.userExited();
 		checkNextCommands(CLOSE, UP, OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(3, Direction.DOWN));
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, OPEN_DOWN);
-		elevator.userEntered();
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(2, Direction.DOWN));
+		elevator.userEntered(getDummyUserCallingFrom(2, Direction.DOWN));
 		elevator.goTo(0);
 		elevator.goTo(0);
 		checkNextCommands(CLOSE, DOWN, DOWN, OPEN);
@@ -268,11 +289,11 @@ public class ElevatorTest {
 		elevator.reset(0, 3, 5);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(2);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(NOTHING);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(2);
 		checkNextCommands(CLOSE);
 	}
@@ -282,7 +303,7 @@ public class ElevatorTest {
 		elevator.reset(0, 3, 5);
 		elevator.call(1, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.DOWN));
 		elevator.goTo(0);
 		elevator.call(1, Direction.DOWN);
 		checkNextCommands(NOTHING);
@@ -294,8 +315,8 @@ public class ElevatorTest {
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.call(1, Direction.UP);
 		checkNextCommands(CLOSE);
 	}
@@ -307,9 +328,9 @@ public class ElevatorTest {
 		makeSeveralCalls(2, Direction.UP, 3);
 		makeSeveralCalls(3, Direction.DOWN, 10);
 		checkNextCommands(UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(3);
 		checkNextCommands(CLOSE, UP, UP, OPEN);
 	}
@@ -322,7 +343,7 @@ public class ElevatorTest {
 		elevator.call(1, Direction.DOWN);
 		elevator.call(2, Direction.UP);
 		checkNextCommands(OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(4, Direction.UP));
 		elevator.goTo(5);
 		checkNextCommands(CLOSE, UP);
 	}
@@ -332,15 +353,15 @@ public class ElevatorTest {
 		elevator.reset(0, 5, 10);
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(0, Direction.UP));
 		elevator.goTo(4);
 		elevator.call(3, Direction.UP);
 		elevator.call(3, Direction.DOWN);
 		elevator.call(3, Direction.UP);
 		checkNextCommands(CLOSE, UP, UP, UP, OPEN_UP);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(3, Direction.UP));
 		elevator.goTo(5);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(3, Direction.UP));
 		elevator.goTo(5);
 		checkNextCommands(CLOSE, UP);
 	}
@@ -352,13 +373,13 @@ public class ElevatorTest {
 		makeSeveralCalls(1, Direction.UP, 4);
 		elevator.call(35, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(36);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(36);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(36);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(36);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 35);
@@ -379,9 +400,9 @@ public class ElevatorTest {
 		elevator.call(34, Direction.DOWN);
 		elevator.call(34, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(34);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
 		elevator.goTo(34);
 		checkNextCommands(CLOSE);
 		checkNextCommandSomeTimes(UP, 33);
@@ -390,9 +411,9 @@ public class ElevatorTest {
 		elevator.call(33, Direction.DOWN);
 		elevator.userExited();
 		elevator.userExited();
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(33, Direction.DOWN));
 		elevator.goTo(1);
-		elevator.userEntered();
+		elevator.userEntered(getDummyUserCallingFrom(33, Direction.DOWN));
 		elevator.goTo(1);/* on repasse en rush mode... */
 		checkNextCommands(CLOSE, DOWN, OPEN); /* étage 33 */
 	}

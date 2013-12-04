@@ -1,7 +1,12 @@
 package com.bzn.codestory.elevator;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
 public class Floor {
 	private int floorNumber;
+	private List<User> users;
 	private boolean floorTakenUp;
 	private int cabinTakingFloorUp;
 	private boolean floorTakenDown;
@@ -11,6 +16,7 @@ public class Floor {
 		this.floorNumber = floorNumber;
 		floorTakenUp = false;
 		floorTakenDown = false;
+		users = Lists.<User> newArrayList();
 	}
 	
 	public int getFloorNumber() {
@@ -27,5 +33,12 @@ public class Floor {
 	}
 	public int getCabinTakingFloorDown() {
 		return cabinTakingFloorDown;
+	}
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void addUser(User newUser) {
+		users.add(newUser);
 	}
 }
