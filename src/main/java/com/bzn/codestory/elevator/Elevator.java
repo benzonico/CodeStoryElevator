@@ -63,7 +63,7 @@ public class Elevator {
 			if (algorithm.shouldClose()) {
 				return close();
 			} else {
-				return doNothing();
+				return stayOpen();
 			}
 		}
 		if (algorithm.shouldOpen()) {
@@ -113,6 +113,7 @@ public class Elevator {
 
 	private Command open() {
 		open = true;
+		users.emptyCallsForFloorAndDirection(currentFloor, currentDirection);
 		return Command.open(currentDirection);
 	}
 
@@ -134,6 +135,11 @@ public class Elevator {
 		currentDirection = Direction.NIL;
 		return NOTHING;
 	}
+	
+	private Command stayOpen() {
+		users.emptyCallsForFloorAndDirection(currentFloor, currentDirection);
+		return NOTHING;
+	}
 
 	public void call(int floor, Direction direction) {
 		users.userCalls(new Call(floor, direction), currentTime);
@@ -147,8 +153,8 @@ public class Elevator {
 		users.userWantsToGoTo(new GoTo(floor, dir), currentFloor);
 	}
 
-	public void userEntered() {
-		users.enter(currentFloor, currentDirection, currentTime);
+	public void userEntered(User userEntering) {
+		users.enter(userEntering, currentFloor, currentTime);
 	}
 
 	public void userExited() {

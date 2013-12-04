@@ -17,11 +17,9 @@ public class UsersTest {
 		users.userCalls(call, 10);
 		users.userCalls(call, 15);
 		assertThat(users.getUsersCalling().get(floor_0)).isNotEmpty().hasSize(4);
-		users.enter(floor_0, Direction.UP, 25);
+		users.enter(users.getUsersCalling().get(floor_0).get(3), floor_0, 25);
 		int floor_2 = 2;
 		users.userWantsToGoTo(new GoTo(floor_2, Direction.UP), 0);
-		User excluded = new User(call, olderTimeUp);
-		assertThat(users.getUsersCalling().get(floor_0)).isNotEmpty().hasSize(3).excludes(excluded);
 		assertThat(users.getUsersInCabin().get(floor_2)).isNotEmpty();
 	}
 

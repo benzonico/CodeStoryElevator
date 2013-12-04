@@ -1,7 +1,11 @@
 package com.bzn.codestory.elevator;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class Building {
@@ -32,6 +36,8 @@ public class Building {
 	
 	public void receiveCall(int floor, Direction direction){
 		elevators[0].call(floor, direction);
+		User newUser = new User(new Call(floor, direction), 0);
+		floors.get(floor).addUser(newUser);
 	}
 	
 	public void receiveGoTo(int cabin, int floor){
@@ -39,7 +45,24 @@ public class Building {
 	}
 	
 	public void userEntered(int cabin){
-		elevators[cabin].userEntered();
+		Elevator elevator = elevators[cabin];
+		int elevatorFloor = elevator.currentFloor;
+		Direction elevatorDirection = elevator.getCurrentDirection();
+		boolean userFound = false;
+		User userEntering = null;
+		List<User> userAtFloor = floors.get(elevatorFloor).getUsers();
+		Iterator<User> iterator = userAtFloor.iterator();
+		while(!userFound && iterator.hasNext()){
+			User userInspected = iterator.next();
+			userFound = elevatorDirection == Direction.NIL || elevatorDirection == userInspected.getCall().getDirection();
+			if (userFound) {
+				userEntering = userInspected;
+				iterator.remove();
+			}
+		}
+		if (userEntering != null) {
+			elevators[cabin].userEntered(userEntering);
+		}
 	}
 	
 	public void userExited(int cabin){
