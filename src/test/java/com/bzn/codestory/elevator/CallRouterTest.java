@@ -18,7 +18,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(2);
 		elevator1.setCurrentDirection(UP);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, 3, UP)).isEqualTo(elevator1);
+		assertThat(new CallRouter().route(temp, new Floor(3), UP)).isEqualTo(elevator1);
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(2);
 		elevator1.setCurrentDirection(UP);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, 1, UP)).isEqualTo(elevator0);
+		assertThat(new CallRouter().route(temp, new Floor(1), UP)).isEqualTo(elevator0);
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(2);
 		elevator1.setCurrentDirection(UP);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, 3, UP)).isEqualTo(elevator1);
+		assertThat(new CallRouter().route(temp, new Floor(3), UP)).isEqualTo(elevator1);
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(4);
 		elevator1.setCurrentDirection(DOWN);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, 3, DOWN)).isNotNull();
+		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isNotNull();
 		// .isEqualTo(elevator1); set up the test properly
 	}
 
@@ -59,7 +59,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(4);
 		elevator1.setCurrentDirection(DOWN);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, 3, DOWN)).isEqualTo(elevator1);
+		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isEqualTo(elevator1);
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(4);
 		elevator1.setCurrentDirection(UP);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, 3, DOWN)).isEqualTo(elevator0);
+		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isEqualTo(elevator0);
 	}
 
 }

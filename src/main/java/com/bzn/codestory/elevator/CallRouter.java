@@ -2,19 +2,19 @@ package com.bzn.codestory.elevator;
 
 public class CallRouter {
 
-	public Elevator route(Elevator[] elevators, int floor, Direction to) {
+	public Elevator route(Elevator[] elevators, Floor floor, Direction to) {
 		Elevator result = null;
 		for (Elevator elevator : elevators) {
 			if (elevator.getCurrentDirection().equals(to)
 					&& floorIsInDirectionOfElevator(elevator.currentFloor,
-							floor, elevator.getCurrentDirection())) {
+							floor.getFloorNumber(), elevator.getCurrentDirection())) {
 				result = elevator;
 				break;
 			}
 		}
 		if (result == null) {
 			for (Elevator elevator : elevators) {
-				if (floorIsInDirectionOfElevator(elevator.currentFloor, floor,
+				if (floorIsInDirectionOfElevator(elevator.currentFloor, floor.getFloorNumber(),
 						elevator.getCurrentDirection())) {
 					result = elevator;
 					break;

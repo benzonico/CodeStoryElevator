@@ -3,9 +3,7 @@ package com.bzn.codestory.elevator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class Building {
@@ -37,7 +35,7 @@ public class Building {
 	}
 	
 	public void receiveCall(int floor, Direction direction){
-		Elevator picked = new CallRouter().route(elevators, floor,
+		Elevator picked = new CallRouter().route(elevators, floors.get(floor),
                 direction);
 		picked.call(floor, direction);
 		User newUser = new User(new Call(floor, direction), clock);
