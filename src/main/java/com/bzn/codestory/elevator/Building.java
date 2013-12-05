@@ -37,7 +37,9 @@ public class Building {
 	}
 	
 	public void receiveCall(int floor, Direction direction){
-		elevators[0].call(floor, direction);
+		Elevator picked = new CallRouter().route(elevators, floor,
+                direction);
+		picked.call(floor, direction);
 		User newUser = new User(new Call(floor, direction), clock);
 		floors.get(floor).addUser(newUser);
 	}

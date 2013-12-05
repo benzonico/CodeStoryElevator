@@ -114,16 +114,16 @@ public class Elevator {
 
 	private Command idle() {
 		Command idleCommand = doNothing();
-		if (currentFloor > getMiddleFloor()) {
+		if (currentFloor > getBalanceFloor()) {
 			idleCommand = down();
-		} else if (currentFloor < getMiddleFloor()) {
+		} else if (currentFloor < getBalanceFloor()) {
 			idleCommand = up();
 		}
 		return idleCommand;
 	}
-
-	private int getMiddleFloor() {
-		return lower + Math.abs(higher - lower + 1) / 2;
+	
+	private int getBalanceFloor() {
+		return (int) (lower + Math.random() * (higher - lower + 1));
 	}
 
 	private Command doNothing() {
