@@ -16,17 +16,19 @@ public class Building {
 	public Elevator[] elevators;
 	private Map<Integer, Floor> floors;
 	private int cabinCount;
+	private Clock clock;
 	
 	public Building(int lower, int higher, int cabinCount, int cabinSize){
 		this.cabinCount = cabinCount;
 		floors = Maps.<Integer, Floor> newHashMap();
+		clock = new Clock();
 		for (int i = lower; i <= higher; i++) {
 			floors.put(i, new Floor(i));
 		}
 		elevators = new Elevator[cabinCount];
 		for (int cabin=0; cabin < cabinCount; cabin ++) {
 			elevators[cabin] = new Elevator();
-			elevators[cabin].reset(lower, higher, cabinSize);
+			elevators[cabin].reset(lower, higher, cabinSize, clock);
 		}
 	}
 	
@@ -36,7 +38,7 @@ public class Building {
 	
 	public void receiveCall(int floor, Direction direction){
 		elevators[0].call(floor, direction);
-		User newUser = new User(new Call(floor, direction), 0);
+		User newUser = new User(new Call(floor, direction), clock);
 		floors.get(floor).addUser(newUser);
 	}
 	
@@ -70,6 +72,7 @@ public class Building {
 	}
 	
 	public String[] nextCommands() {
+		clock.tic();
 		String[] commands = new String[cabinCount];
 		for (int cabin=0; cabin < cabinCount; cabin ++) {
 			commands[cabin] = elevators[cabin].nextCommand().toString();

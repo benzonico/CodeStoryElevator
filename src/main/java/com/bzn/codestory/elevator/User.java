@@ -10,13 +10,13 @@ public class User implements Comparable<User> {
 	private final static int waitWeight = 1;
 	private final static int travelWeight = 1;
 
-	public User(Call call, int timeArrivedInBuilding) {
+	public User(Call call, Clock clock) {
 		this.call = call;
-		this.timeArrivedInBuilding = timeArrivedInBuilding;
+		this.timeArrivedInBuilding = clock.getTime();
 	}
 
-	public void enterCabin(int timeEnteredCabin) {
-		this.timeEnteredCabin = timeEnteredCabin;
+	public void enterCabin(Clock clockWhenEntering) {
+		this.timeEnteredCabin = clockWhenEntering.getTime();
 	}
 
 	public void goTo(GoTo goTo) {
@@ -32,7 +32,7 @@ public class User implements Comparable<User> {
 	}
 
 	public int getPotentialMaxScore(int currentFloor,
-			Direction currentDirection, int lower, int higher, int currentTime) {
+			Direction currentDirection, int lower, int higher, Clock clock) {
 
 		int potentialTravelTime = 0;
 		if (Direction.UP == call.direction) {
@@ -44,7 +44,7 @@ public class User implements Comparable<User> {
 		int potentialScore = 2
 				* (higher - lower + 1)
 				- waitWeight
-				* (getWaitingTime(currentTime) + Math.abs(call.floor
+				* (clock.getWaitingTime(timeArrivedInBuilding) + Math.abs(call.floor
 						- currentFloor)) - travelWeight * (potentialTravelTime);
 		return Math.max(0, potentialScore);
 	}

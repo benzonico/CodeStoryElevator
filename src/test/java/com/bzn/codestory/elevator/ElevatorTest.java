@@ -19,6 +19,7 @@ public class ElevatorTest {
 
 	private Elevator elevator;
 	private static final int MIDDLE_FLOOR = 10;
+	private static final Clock clock = new Clock();
 
 	@Before
 	public void setUp() {
@@ -56,7 +57,7 @@ public class ElevatorTest {
 	@Test
 	public void should_go_to_real_middle_floor_when_no_calls_and_lower_floor_underground()
 			throws Exception {
-		elevator.reset(-2, 4, 30); /* middle floor should be 1 */
+		elevator.reset(-2, 4, 30, clock); /* middle floor should be 1 */
 		checkNextCommands(UP, NOTHING);
 	}
 
@@ -124,7 +125,7 @@ public class ElevatorTest {
 
 	private User getDummyUserCallingFrom(int floor, Direction direction) {
 		Call call = new Call(floor, direction);
-		return new User(call, 0);
+		return new User(call, clock);
 	}
 
 	@Test
@@ -221,14 +222,14 @@ public class ElevatorTest {
 
 	@Test
 	public void should_go_6ft_under() throws Exception {
-		elevator.reset(-6, 6, 6);
+		elevator.reset(-6, 6, 6, clock);
 		elevator.call(-6, Direction.UP);
 		checkNextCommands(DOWN, DOWN, DOWN, DOWN, DOWN, DOWN, OPEN);
 	}
 
 	@Test
 	public void should_open_for_safety_reasons() throws Exception {
-		elevator.reset(0, 3, 2);
+		elevator.reset(0, 3, 2, clock);
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.UP);
@@ -246,7 +247,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_refuse_if_cabin_full() throws Exception {
-		elevator.reset(0, 3, 2);
+		elevator.reset(0, 3, 2, clock);
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.UP);
@@ -263,7 +264,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_skip_users_going_the_other_way() throws Exception {
-		elevator.reset(0, 3, 2);
+		elevator.reset(0, 3, 2, clock);
 		elevator.call(1, Direction.UP);
 		elevator.call(2, Direction.DOWN);
 		elevator.call(2, Direction.DOWN);
@@ -286,7 +287,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_not_close_doors_in_the_nose_of_users() {
-		elevator.reset(0, 3, 5);
+		elevator.reset(0, 3, 5, clock);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
 		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
@@ -300,7 +301,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_change_direction_without_forgetting_users_at_floor() {
-		elevator.reset(0, 3, 5);
+		elevator.reset(0, 3, 5, clock);
 		elevator.call(1, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
 		elevator.userEntered(getDummyUserCallingFrom(1, Direction.DOWN));
@@ -311,7 +312,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_not_reopen_if_cabin_full() {
-		elevator.reset(0, 3, 2);
+		elevator.reset(0, 3, 2, clock);
 		elevator.call(1, Direction.UP);
 		elevator.call(1, Direction.UP);
 		checkNextCommands(UP, OPEN_UP);
@@ -323,7 +324,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_detect_not_stop_to_take_users_if_cabin_full() {
-		elevator.reset(0, 3, 2);
+		elevator.reset(0, 3, 2, clock);
 		makeSeveralCalls(1, Direction.UP, 2);
 		makeSeveralCalls(2, Direction.UP, 3);
 		makeSeveralCalls(3, Direction.DOWN, 10);
@@ -337,7 +338,7 @@ public class ElevatorTest {
 
 	@Test
 	public void should_not_take_user_to_bottom_if_he_wants_to_go_up() {
-		elevator.reset(0, 5, 10);
+		elevator.reset(0, 5, 10, clock);
 		elevator.call(4, Direction.UP);
 		checkNextCommands(UP, UP, UP, UP);
 		elevator.call(1, Direction.DOWN);
@@ -350,7 +351,7 @@ public class ElevatorTest {
 
 	@Test
 	public void elevator_should_not_stay_at_one_floor_forever() {
-		elevator.reset(0, 5, 10);
+		elevator.reset(0, 5, 10, clock);
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
 		elevator.userEntered(getDummyUserCallingFrom(0, Direction.UP));
@@ -369,7 +370,7 @@ public class ElevatorTest {
 	@Test
 	@Ignore("vip mode is not activated")
 	public void should_stop_only_to_pick_vips_or_to_drop_people_in_vip_mode() {
-		elevator.reset(0, 40, 6);
+		elevator.reset(0, 40, 6, clock);
 		makeSeveralCalls(1, Direction.UP, 4);
 		elevator.call(35, Direction.DOWN);
 		checkNextCommands(UP, OPEN);
@@ -394,7 +395,7 @@ public class ElevatorTest {
 	@Ignore("vip mode is not activated")
 	public void one_no_vip_calling_at_36_and_one_vip_calling_at_33_should_change_direction()
 			throws Exception {
-		elevator.reset(0, 37, 3);
+		elevator.reset(0, 37, 3, clock);
 		makeSeveralCalls(1, Direction.UP, 2);
 		elevator.call(36, Direction.DOWN);
 		elevator.call(34, Direction.DOWN);
