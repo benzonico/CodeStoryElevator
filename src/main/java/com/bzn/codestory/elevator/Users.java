@@ -53,8 +53,8 @@ public class Users {
 		return countCallsDown;
 	}
 
-	public void userCalls(Call order, int timeOfArrival) {
-		User newUser = new User(order, timeOfArrival);
+	public void userCalls(Call order, Clock clock) {
+		User newUser = new User(order, clock);
 		usersCalling.get(order.floor).add(newUser);
 	}
 
@@ -65,8 +65,8 @@ public class Users {
 		usersInCabin.get(order.floor).add(lastUserInCabin);
 	}
 
-	public void enter(User userEntering, int currentFloor, int timeEntered) {
-		userEntering.enterCabin(timeEntered);
+	public void enter(User userEntering, int currentFloor, Clock clock) {
+		userEntering.enterCabin(clock);
 		usersInCabin.get(currentFloor).add(userEntering);
 	}
 

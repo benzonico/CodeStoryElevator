@@ -26,7 +26,7 @@ public class Elevator {
 	private CrowdedElevatorAlgorithm crowdedElevatorAlgorithm;
 	private OneDirectionElevatorAlgorithm oneDirectionElevatorAlgorithm;
 
-	private int currentTime;
+	private Clock clock;
 
 	public Elevator() {
 		this(0);
@@ -34,17 +34,18 @@ public class Elevator {
 
 	@VisibleForTesting
 	Elevator(int startFloor) {
-		reset(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_SIZE);
+		reset(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_SIZE, new Clock());
 		currentFloor = startFloor;
 		crowdedElevatorAlgorithm = new CrowdedElevatorAlgorithm(this);
 		oneDirectionElevatorAlgorithm = new OneDirectionElevatorAlgorithm(this);
 	}
 
-	public void reset(int lower, int higher, int cabinSize) {
+	public void reset(int lower, int higher, int cabinSize, Clock horloge) {
 		this.lower = lower;
 		this.higher = higher;
 		currentFloor = 0;
 		this.cabinSize = cabinSize;
+		this.clock = horloge;
 		reset();
 	}
 
@@ -53,12 +54,10 @@ public class Elevator {
 		users = new Users(lower, higher);
 		open = false;
 		currentDirection = Direction.NIL;
-		currentTime = 0;
 	}
 
 	public Command nextCommand() {
 		ElevatorAlgorithm algorithm = chooseAlgorithm();
-		increaseCurrentTime();
 		if (open) {
 			if (algorithm.shouldClose()) {
 				return close();
@@ -76,10 +75,6 @@ public class Elevator {
 			}
 		}
 		return idle();
-	}
-
-	private void increaseCurrentTime() {
-		currentTime++;
 	}
 
 	private ElevatorAlgorithm chooseAlgorithm() {
@@ -142,7 +137,7 @@ public class Elevator {
 	}
 
 	public void call(int floor, Direction direction) {
-		users.userCalls(new Call(floor, direction), currentTime);
+		users.userCalls(new Call(floor, direction), clock);
 	}
 
 	public void goTo(int floor) {
@@ -154,7 +149,7 @@ public class Elevator {
 	}
 
 	public void userEntered(User userEntering) {
-		users.enter(userEntering, currentFloor, currentTime);
+		users.enter(userEntering, currentFloor, clock);
 	}
 
 	public void userExited() {
@@ -163,10 +158,6 @@ public class Elevator {
 
 	public ElevatorStatus getStatus() {
 		return new ElevatorStatus(currentFloor, usersInCabin(), cabinSize, open, currentDirection, users);
-	}
-
-	public int getCurrentTime() {
-		return currentTime;
 	}
 
 	public Direction getCurrentDirection() {
@@ -202,7 +193,7 @@ public class Elevator {
 		int floorPotentialScore = 0;
 		for (User user : usersToInspect) {
 			floorPotentialScore = floorPotentialScore
-					+ user.getPotentialMaxScore(currentFloor, currentDirection, lower, higher, currentTime);
+					+ user.getPotentialMaxScore(currentFloor, currentDirection, lower, higher, clock);
 		}
 		return floorPotentialScore;
 	}
