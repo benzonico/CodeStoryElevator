@@ -27,12 +27,6 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_stay_idle_when_no_stimulus() throws Exception {
-		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
-		checkNextCommands(NOTHING);
-	}
-
-	@Test
 	public void should_open_doors_if_call_at_initial_floor() throws Exception {
 		elevator.call(0, Direction.UP);
 		checkNextCommands(OPEN);
@@ -49,32 +43,8 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_go_to_middle_floor_when_no_calls() throws Exception {
-		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR);
-		checkNextCommands(NOTHING);
-	}
-
-	@Test
-	public void should_go_to_real_middle_floor_when_no_calls_and_lower_floor_underground()
-			throws Exception {
-		elevator.reset(-2, 4, 30, clock); /* middle floor should be 1 */
-		checkNextCommands(UP, NOTHING);
-	}
-
-	@Test
-	public void should_go_down_to_middle_floor_when_floor_11_and_no_calls()
-			throws Exception {
-		elevator.call(1, Direction.UP);
-		checkNextCommands(UP, OPEN_UP);
-		int floor_1 = 1;
-		User lastUserAtFloor = getDummyUserCallingFrom(floor_1, Direction.UP);
-		elevator.userEntered(lastUserAtFloor);
-		elevator.goTo(11);
-		checkNextCommands(CLOSE);
-		checkNextCommandSomeTimes(UP, 10);
-		checkNextCommands(OPEN);
-		elevator.userExited();
-		checkNextCommands(CLOSE, DOWN, NOTHING);
+	public void should_go_to_random_floor_when_no_calls() throws Exception {
+		assertThat(elevator.nextCommand()).isIn(UP, DOWN, NOTHING);
 	}
 
 	@Test
@@ -90,7 +60,6 @@ public class ElevatorTest {
 		elevator.userExited();
 		assertThat(elevator.usersInCabin()).isEqualTo(0);
 		checkNextCommands(CLOSE);
-		checkNextCommandSomeTimes(UP, MIDDLE_FLOOR - 1);
 	}
 
 	@Test
