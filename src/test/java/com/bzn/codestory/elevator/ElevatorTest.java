@@ -9,8 +9,6 @@ import static com.bzn.codestory.elevator.Command.OPEN_UP;
 import static com.bzn.codestory.elevator.Command.UP;
 import static org.fest.assertions.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,7 +16,6 @@ import org.junit.Test;
 public class ElevatorTest {
 
 	private Elevator elevator;
-	private static final int MIDDLE_FLOOR = 10;
 	private static final Clock clock = new Clock();
 
 	@Before
@@ -43,8 +40,18 @@ public class ElevatorTest {
 	}
 
 	@Test
-	public void should_go_to_random_floor_when_no_calls() throws Exception {
-		assertThat(elevator.nextCommand()).isIn(UP, DOWN, NOTHING);
+	public void should_do_nothing_at_balance_floor() throws Exception {
+		assertThat(new Elevator(5, 5).nextCommand()).isEqualTo(NOTHING);
+	}
+
+	@Test
+	public void should_drop_to_balance_floor() throws Exception {
+		assertThat(new Elevator(6, 5).nextCommand()).isEqualTo(DOWN);
+	}
+
+	@Test
+	public void should_climb_to_balance_floor() throws Exception {
+		assertThat(new Elevator(4, 5).nextCommand()).isEqualTo(UP);
 	}
 
 	@Test
