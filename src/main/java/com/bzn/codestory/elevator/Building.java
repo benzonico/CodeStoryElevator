@@ -35,8 +35,7 @@ public class Building {
 	}
 	
 	public void receiveCall(int floor, Direction direction){
-		Elevator picked = new CallRouter().route(elevators, floors.get(floor),
-                direction);
+		Elevator picked = new CallRouter().route(elevators, floors.get(floor), direction);
 		picked.call(floor, direction);
 		User newUser = new User(new Call(floor, direction), clock);
 		floors.get(floor).addUser(newUser);
@@ -48,12 +47,11 @@ public class Building {
 	
 	public void userEntered(int cabin){
 		Elevator elevator = elevators[cabin];
-		int elevatorFloor = elevator.currentFloor;
 		Direction elevatorDirection = elevator.getCurrentDirection();
 		boolean userFound = false;
 		User userEntering = null;
-		List<User> userAtFloor = floors.get(elevatorFloor).getUsers();
-		Iterator<User> iterator = userAtFloor.iterator();
+		List<User> usersAtFloor = floors.get(elevator.currentFloor).getUsers();
+		Iterator<User> iterator = usersAtFloor.iterator();
 		while(!userFound && iterator.hasNext()){
 			User userInspected = iterator.next();
 			userFound = elevatorDirection == Direction.NIL || elevatorDirection == userInspected.getCall().getDirection();
@@ -63,7 +61,7 @@ public class Building {
 			}
 		}
 		if (userEntering != null) {
-			elevators[cabin].userEntered(userEntering);
+			elevator.userEntered(userEntering);
 		}
 	}
 	

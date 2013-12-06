@@ -6,16 +6,14 @@ public class CallRouter {
 		Elevator result = null;
 		for (Elevator elevator : elevators) {
 			if (elevator.getCurrentDirection().equals(to)
-					&& floorIsInDirectionOfElevator(elevator.currentFloor,
-							floor.getFloorNumber(), elevator.getCurrentDirection())) {
+					&& elevator.floorIsInSameDirection(floor.getFloorNumber())) {
 				result = elevator;
 				break;
 			}
 		}
 		if (result == null) {
 			for (Elevator elevator : elevators) {
-				if (floorIsInDirectionOfElevator(elevator.currentFloor, floor.getFloorNumber(),
-						elevator.getCurrentDirection())) {
+				if (elevator.floorIsInSameDirection(floor.getFloorNumber())) {
 					result = elevator;
 					break;
 				}
@@ -23,23 +21,16 @@ public class CallRouter {
 		}
 		if (result == null) {
 			for (Elevator elevator : elevators) {
-				if (result == null
-						|| result.getUsers().countUsersInCabin() > elevator
-								.getUsers().countUsersInCabin()) {
+				if (result == null) {
+					// Choose first elevator
+					result = elevator;
+				} else if (result.hasMoreUsersInCabinThan(elevator)) {
+					// Assign better elevator
 					result = elevator;
 				}
 			}
 		}
 		return result;
-	}
-
-	private boolean floorIsInDirectionOfElevator(int currentFloor, int floor,
-			Direction elevatorDir) {
-		int diff = currentFloor - floor;
-		if (elevatorDir.isUp()) {
-			diff = -1 * diff;
-		}
-		return diff > 0;
 	}
 }
 

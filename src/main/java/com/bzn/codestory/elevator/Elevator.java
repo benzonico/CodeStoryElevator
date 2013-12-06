@@ -16,6 +16,7 @@ public class Elevator {
 	private static final int DEFAULT_CABIN_SIZE = 30;
 
 	int currentFloor;
+	int balanceFloor;
 	private int cabinSize;
 	private int lower;
 	private int higher;
@@ -34,7 +35,13 @@ public class Elevator {
 
 	@VisibleForTesting
 	Elevator(int startFloor) {
+		this(startFloor, DEFAULT_FLOORS / 2);
+	}
+
+	@VisibleForTesting
+	Elevator(int startFloor, int balanceFloor) {
 		reset(0, DEFAULT_FLOORS - 1, DEFAULT_CABIN_SIZE, new Clock());
+		this.balanceFloor = balanceFloor;
 		currentFloor = startFloor;
 		crowdedElevatorAlgorithm = new CrowdedElevatorAlgorithm(this);
 		oneDirectionElevatorAlgorithm = new OneDirectionElevatorAlgorithm(this);
@@ -44,6 +51,7 @@ public class Elevator {
 		this.lower = lower;
 		this.higher = higher;
 		currentFloor = 0;
+		balanceFloor = newBalanceFloor();
 		this.cabinSize = cabinSize;
 		this.clock = horloge;
 		reset();
@@ -114,15 +122,15 @@ public class Elevator {
 
 	private Command idle() {
 		Command idleCommand = doNothing();
-		if (currentFloor > getBalanceFloor()) {
+		if (currentFloor > balanceFloor) {
 			idleCommand = down();
-		} else if (currentFloor < getBalanceFloor()) {
+		} else if (currentFloor < balanceFloor) {
 			idleCommand = up();
 		}
 		return idleCommand;
 	}
 	
-	private int getBalanceFloor() {
+	private int newBalanceFloor() {
 		return (int) (lower + Math.random() * (higher - lower + 1));
 	}
 
@@ -236,6 +244,18 @@ public class Elevator {
 
 	public int countUsersGoingBelow() {
 		return users.countGoToBelow(currentFloor);
+	}
+
+	boolean floorIsInSameDirection(int floor) {
+		int diff = currentFloor - floor;
+		if (getCurrentDirection().isUp()) {
+			diff = -1 * diff;
+		}
+		return diff > 0;
+	}
+
+	boolean hasMoreUsersInCabinThan(Elevator elevator) {
+		return users.countUsersInCabin() > elevator.users.countUsersInCabin();
 	}
 
 }
