@@ -1,11 +1,8 @@
 package com.bzn.codestory.elevator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 
-	private Logger logger = LoggerFactory.getLogger(OneDirectionElevatorAlgorithm.class);
 
 	public OneDirectionElevatorAlgorithm(Elevator elevator) {
 		super(elevator);
@@ -32,19 +29,13 @@ public class OneDirectionElevatorAlgorithm extends ElevatorAlgorithm {
 	@Override
 	public boolean shouldChangeDirection() {
 		boolean shouldChange = false;
-		String reason = "";
 		if (!getElevator().hasUsersCallingFromCurrentFloorGoingInSameDirection()) {
 			if (getElevator().getCurrentDirection().isUp()) {
 				shouldChange = getElevator().countUsersAboveCurrentFloor() == 0;
-				reason = "no more users above";
 			}
 			if (getElevator().getCurrentDirection().isDown()) {
 				shouldChange = getElevator().countUsersBelowCurrentFloor() == 0;
-				reason = "no more users below";
 			}
-		}
-		if (shouldChange) {
-			logger.info("changing direction at floor {}: cause: {}", getElevator().currentFloor, reason);
 		}
 		return shouldChange;
 	}

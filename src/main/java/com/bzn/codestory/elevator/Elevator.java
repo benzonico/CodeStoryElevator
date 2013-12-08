@@ -206,6 +206,26 @@ public class Elevator {
 		return floorPotentialScore;
 	}
 
+	public double getDistanceToFloor(Floor floor, Direction to) {
+		int floorDifference = 0;
+		if (isDirectWayToFloor(floor, to)) {
+			floorDifference = Math.abs(floor.getFloorNumber() - currentFloor);
+		} else {
+			if (currentDirection.isUp()) {
+				floorDifference = Math.abs(higher - currentFloor) + Math.abs(higher - floor.getFloorNumber());
+			}
+			if (currentDirection.isDown()) {
+				floorDifference = Math.abs(lower - currentFloor) + Math.abs(lower - floor.getFloorNumber());
+			}
+		}
+		double ponderateByUsersInCabin = 0.5 * usersInCabin();
+		return floorDifference + ponderateByUsersInCabin;
+	}
+
+	public boolean isDirectWayToFloor(Floor floor, Direction to) {
+		return (currentDirection.isNil() || currentDirection == to) && floorIsInSameDirection(floor.getFloorNumber());
+	}
+
 	public boolean isAtTop() {
 		return currentFloor == higher;
 	}
@@ -251,7 +271,7 @@ public class Elevator {
 		if (getCurrentDirection().isUp()) {
 			diff = -1 * diff;
 		}
-		return diff > 0;
+		return currentDirection.isNil() || diff > 0;
 	}
 
 	boolean hasMoreUsersInCabinThan(Elevator elevator) {
