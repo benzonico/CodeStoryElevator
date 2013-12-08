@@ -395,6 +395,63 @@ public class ElevatorTest {
 		checkNextCommands(CLOSE, DOWN, OPEN); /* étage 33 */
 	}
 
+	@Test
+	public void calculateDistanceInSameDirection() throws Exception {
+		elevator.reset(0, 5, 5, clock);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(UP);
+		Floor floorToGo = new Floor(2);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.UP)).isEqualTo(1);
+	}
+
+	@Test
+	public void calculateDistanceAtSameFloor() throws Exception {
+		elevator.reset(0, 5, 5, clock);
+		Floor floorToGo = new Floor(0);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.UP)).isEqualTo(0);
+	}
+
+	@Test
+	public void calculateDistanceInSameDirectionWithUsersInCabin() throws Exception {
+		elevator.reset(0, 5, 5, clock);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(UP, OPEN_UP);
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
+		elevator.goTo(3);
+		Floor floorToGo = new Floor(2);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.UP)).isEqualTo(1.5);
+	}
+
+	@Test
+	public void calculateDistanceInOtherDirection() throws Exception {
+		elevator.reset(0, 5, 5, clock);
+		elevator.call(1, Direction.UP);
+		checkNextCommands(UP);
+		Floor floorToGo = new Floor(2);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.DOWN)).isEqualTo(7);
+	}
+
+	@Test
+	public void calculateDistanceInOtherDirectionDown() throws Exception {
+		elevator.reset(0, 5, 5, clock);
+		elevator.call(5, Direction.DOWN);
+		checkNextCommands(UP, UP, UP, UP, UP, OPEN);
+		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
+		elevator.goTo(3);
+		checkNextCommands(CLOSE, DOWN);
+		Floor floorToGo = new Floor(2);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.UP)).isEqualTo(6.5);
+	}
+
+	@Test
+	public void calculateDistanceWhenNoDirection() throws Exception {
+		elevator.reset(0, 5, 5, clock);
+		Floor floorToGo = new Floor(2);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.UP)).isEqualTo(2);
+		assertThat(elevator.getDistanceToFloor(floorToGo, Direction.DOWN)).isEqualTo(2);
+	}
+
+
 	private void checkNextCommandSomeTimes(Command command, int times) {
 		for (int i = 0; i < times; i++) {
 			checkNextCommands(command);
