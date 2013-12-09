@@ -1,36 +1,17 @@
 package com.bzn.codestory.elevator;
 
+import java.util.SortedMap;
+
+import com.google.common.collect.Maps;
+
 public class CallRouter {
 
 	public Elevator route(Elevator[] elevators, Floor floor, Direction to) {
-		Elevator result = null;
+		SortedMap<Double, Elevator> orderedElevators = Maps.newTreeMap();
 		for (Elevator elevator : elevators) {
-			if (elevator.getCurrentDirection().equals(to)
-					&& elevator.floorIsInSameDirection(floor.getFloorNumber())) {
-				result = elevator;
-				break;
-			}
+			orderedElevators.put(elevator.getDistanceToFloor(floor, to), elevator);
 		}
-		if (result == null) {
-			for (Elevator elevator : elevators) {
-				if (elevator.floorIsInSameDirection(floor.getFloorNumber())) {
-					result = elevator;
-					break;
-				}
-			}
-		}
-		if (result == null) {
-			for (Elevator elevator : elevators) {
-				if (result == null) {
-					// Choose first elevator
-					result = elevator;
-				} else if (result.hasMoreUsersInCabinThan(elevator)) {
-					// Assign better elevator
-					result = elevator;
-				}
-			}
-		}
-		return result;
+		return orderedElevators.get(orderedElevators.firstKey());
 	}
 }
 

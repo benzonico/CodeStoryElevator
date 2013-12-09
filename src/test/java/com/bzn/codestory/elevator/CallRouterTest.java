@@ -48,8 +48,7 @@ public class CallRouterTest {
 		elevator1 = new Elevator(4);
 		elevator1.setCurrentDirection(DOWN);
 		Elevator[] temp = { elevator0, elevator1 };
-		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isNotNull();
-		// .isEqualTo(elevator1); set up the test properly
+		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isEqualTo(elevator1);
 	}
 
 	@Test
@@ -63,13 +62,25 @@ public class CallRouterTest {
 	}
 
 	@Test
-	public void should_pick_lesscrowded_elevator() {
+	public void should_pick_nearest_elevator() {
 		elevator0 = new Elevator(5);
-		elevator0.setCurrentDirection(UP);
+		elevator0.setCurrentDirection(DOWN);
 		elevator1 = new Elevator(4);
-		elevator1.setCurrentDirection(UP);
+		elevator1.setCurrentDirection(DOWN);
+		Elevator[] temp = { elevator0, elevator1 };
+		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isEqualTo(elevator1);
+	}
+
+	@Test
+	public void should_pick_less_crowded_elevator() {
+		elevator0 = new Elevator(5);
+		elevator0.setCurrentDirection(DOWN);
+		elevator1 = new Elevator(4);
+		elevator1.setCurrentDirection(DOWN);
+		elevator1.userEntered(new User(new Call(4, DOWN), new Clock()));
+		elevator1.userEntered(new User(new Call(4, DOWN), new Clock()));
+		elevator1.userEntered(new User(new Call(4, DOWN), new Clock()));
 		Elevator[] temp = { elevator0, elevator1 };
 		assertThat(new CallRouter().route(temp, new Floor(3), DOWN)).isEqualTo(elevator0);
 	}
-
 }
