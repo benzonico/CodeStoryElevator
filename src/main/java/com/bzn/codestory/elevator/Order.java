@@ -36,18 +36,6 @@ public abstract class Order {
 		return true;
 	}
 
-	public boolean isAtFloor(int currentFloor) {
-		return floor == currentFloor;
-	}
-
-	public boolean isHigherThan(int currentFloor) {
-		return floor > currentFloor;
-	}
-
-	public boolean isLowerThan(int currentFloor) {
-		return floor < currentFloor;
-	}
-
 	public Direction getDirection() {
 		return direction;
 	}
