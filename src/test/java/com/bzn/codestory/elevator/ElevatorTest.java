@@ -10,7 +10,6 @@ import static com.bzn.codestory.elevator.Command.UP;
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ElevatorTest {
@@ -341,58 +340,6 @@ public class ElevatorTest {
 		elevator.userEntered(getDummyUserCallingFrom(3, Direction.UP));
 		elevator.goTo(5);
 		checkNextCommands(CLOSE, UP);
-	}
-
-	@Test
-	@Ignore("vip mode is not activated")
-	public void should_stop_only_to_pick_vips_or_to_drop_people_in_vip_mode() {
-		elevator.reset(0, 40, 6, clock);
-		makeSeveralCalls(1, Direction.UP, 4);
-		elevator.call(35, Direction.DOWN);
-		checkNextCommands(UP, OPEN);
-		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
-		elevator.goTo(36);
-		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
-		elevator.goTo(36);
-		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
-		elevator.goTo(36);
-		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
-		elevator.goTo(36);
-		checkNextCommands(CLOSE);
-		checkNextCommandSomeTimes(UP, 35);
-		checkNextCommands(OPEN);/* étage 36 */
-		elevator.userExited();
-		elevator.userExited();
-		elevator.userExited();
-		elevator.userExited();
-	}
-
-	@Test
-	@Ignore("vip mode is not activated")
-	public void one_no_vip_calling_at_36_and_one_vip_calling_at_33_should_change_direction()
-			throws Exception {
-		elevator.reset(0, 37, 3, clock);
-		makeSeveralCalls(1, Direction.UP, 2);
-		elevator.call(36, Direction.DOWN);
-		elevator.call(34, Direction.DOWN);
-		elevator.call(34, Direction.DOWN);
-		checkNextCommands(UP, OPEN);
-		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
-		elevator.goTo(34);
-		elevator.userEntered(getDummyUserCallingFrom(1, Direction.UP));
-		elevator.goTo(34);
-		checkNextCommands(CLOSE);
-		checkNextCommandSomeTimes(UP, 33);
-		checkNextCommands(OPEN);/* étage 34 */
-		elevator.call(33, Direction.DOWN);
-		elevator.call(33, Direction.DOWN);
-		elevator.userExited();
-		elevator.userExited();
-		elevator.userEntered(getDummyUserCallingFrom(33, Direction.DOWN));
-		elevator.goTo(1);
-		elevator.userEntered(getDummyUserCallingFrom(33, Direction.DOWN));
-		elevator.goTo(1);/* on repasse en rush mode... */
-		checkNextCommands(CLOSE, DOWN, OPEN); /* étage 33 */
 	}
 
 	@Test

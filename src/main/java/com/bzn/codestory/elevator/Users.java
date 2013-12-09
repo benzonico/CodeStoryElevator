@@ -1,6 +1,5 @@
 package com.bzn.codestory.elevator;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedMap;
@@ -133,20 +132,6 @@ public class Users {
 		if (!usersInCabin.get(currentFloor).isEmpty()) {
 			usersInCabin.get(currentFloor).remove(0);
 		}
-	}
-
-	public List<User> getUsersThatCanBeTakenInCabinAtFloor(int floor,
-			int remainingPlacesInCabin) {
-		int userInspected = 0;
-		int usersExiting = usersInCabin.get(floor).size();
-		List<User> toReturn = new ArrayList<User>();
-		Iterator<User> iterator = usersCalling.get(floor).iterator();
-		while (iterator.hasNext()
-				&& userInspected < (remainingPlacesInCabin + usersExiting)) {
-			toReturn.add(iterator.next());
-			userInspected++;
-		}
-		return toReturn;
 	}
 
 	public int countUsersInCabin() {

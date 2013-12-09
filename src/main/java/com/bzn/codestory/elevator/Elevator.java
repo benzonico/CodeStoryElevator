@@ -5,8 +5,6 @@ import static com.bzn.codestory.elevator.Command.DOWN;
 import static com.bzn.codestory.elevator.Command.NOTHING;
 import static com.bzn.codestory.elevator.Command.UP;
 
-import java.util.List;
-
 import com.google.common.annotations.VisibleForTesting;
 
 public class Elevator {
@@ -176,34 +174,8 @@ public class Elevator {
 		return users;
 	}
 
-	public int getLower() {
-		return lower;
-	}
-
-	public int getHigher() {
-		return higher;
-	}
-
 	public void setCurrentDirection(Direction direction) {
 		this.currentDirection = direction;
-	}
-
-	private int getRemainingPlacesInCabin() {
-		return cabinSize - users.countUsersInCabin();
-	}
-
-	public int getPotentialScoreForCurrentFloor() {
-		return getPotentialScoreForFloor(currentFloor);
-	}
-
-	public int getPotentialScoreForFloor(int floor) {
-		List<User> usersToInspect = users.getUsersThatCanBeTakenInCabinAtFloor(floor, getRemainingPlacesInCabin());
-		int floorPotentialScore = 0;
-		for (User user : usersToInspect) {
-			floorPotentialScore = floorPotentialScore
-					+ user.getPotentialMaxScore(currentFloor, currentDirection, lower, higher, clock);
-		}
-		return floorPotentialScore;
 	}
 
 	public double getDistanceToFloor(Floor floor, Direction to) {
